@@ -17,6 +17,16 @@ export async function POST(request: Request) {
             'unknown';
 
         const userAgent = request.headers.get('user-agent') || 'unknown';
+        const latitude = request.headers.get('x-vercel-ip-latitude');
+        const longitude = request.headers.get('x-vercel-ip-longitude');
+
+        // Detect IP version
+        let ipVersion = 'unknown';
+        if (ip && ip.includes(':')) {
+            ipVersion = 'IPv6';
+        } else if (ip && ip.includes('.')) {
+            ipVersion = 'IPv4';
+        }
 
         // Insert log
         const { error } = await supabase
@@ -25,7 +35,10 @@ export async function POST(request: Request) {
                 user_id: session.user.id,
                 ip_address: ip,
                 user_agent: userAgent,
-                action: 'login'
+                action: 'login',
+                latitude,
+                longitude,
+                ip_version: ipVersion
             });
 
         if (error) {
