@@ -1,4 +1,5 @@
 import './globals.css';
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ReactNode } from 'react';
@@ -28,7 +29,8 @@ export default function RootLayout({
           {children}
           <NotificationModal />
         </RootInitializer>
+        <Analytics />
       </body>
-    </html>
+    </html >
   );
 }
