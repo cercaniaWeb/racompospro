@@ -222,8 +222,8 @@ export class PosDatabase extends Dexie {
 
   constructor() {
     super('PosDatabase');
-    this.version(5).stores({  // Updated to version 5 for new schema
-      products: '++id, sku, name, category_id, is_active, last_modified, sync_status',
+    this.version(6).stores({  // Updated to version 6 for barcode index
+      products: '++id, sku, name, barcode, category_id, is_active, last_modified, sync_status',
       sales: '++id, transaction_id, customer_id, status, created_at, last_modified, sync_status',
       saleItems: '++id, sale_id, product_id, product_sku, created_at, last_modified, sync_status',
       categories: '++id, name, parent_id, is_active, last_modified, sync_status',
