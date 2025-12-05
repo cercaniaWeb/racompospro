@@ -19,9 +19,17 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     useEffect(() => {
         // Initialize scanner
         const config = {
-            fps: 10,
+            fps: 15,
             qrbox: { width: 250, height: 250 },
             aspectRatio: 1.0,
+            // Use native BarcodeDetector if supported (much faster)
+            useBarCodeDetectorIfSupported: true,
+            videoConstraints: {
+                facingMode: "environment",
+                focusMode: "continuous",
+                width: { min: 640, ideal: 1280, max: 1920 },
+                height: { min: 480, ideal: 720, max: 1080 },
+            },
             supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
             formatsToSupport: [
                 Html5QrcodeSupportedFormats.EAN_13,
