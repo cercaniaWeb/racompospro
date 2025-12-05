@@ -9,6 +9,7 @@ import { ShoppingCart, Search, Scale, Trash2, CreditCard, Banknote, Coffee, Wifi
 import ScaleControl from './ScaleControl';
 import EmployeeConsumptionModal from '@/features/consumption/EmployeeConsumptionModal';
 import AgendarModal from '@/components/organisms/AgendarModal';
+import BarcodeScanner from '@/components/molecules/BarcodeScanner';
 import { usePosStore } from '@/store/posStore';
 import { format } from 'date-fns';
 import PaymentModal from './PaymentModal';
@@ -37,6 +38,7 @@ export default function POSTerminal() {
   const [showTicketPreviewModal, setShowTicketPreviewModal] = useState(false);
   const [lastSale, setLastSale] = useState<{ sale: any, items: any[] } | null>(null);
   const [offline, setOffline] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   // Use global store
   const { cart, addToCart, removeFromCart, clearCart, checkout, getTotals, setDiscount, setSaleNotes, saleNotes } = usePosStore();
@@ -123,6 +125,25 @@ export default function POSTerminal() {
       setShowTicketPreviewModal(true);
     } else {
       alert('Error al registrar venta');
+    }
+  };
+
+  const handleScan = async (decodedText: string) => {
+    setShowScanner(false);
+
+    // Search for product by barcode or SKU
+    const product = await db.products
+      .where('barcode').equals(decodedText)
+      .or('sku').equals(decodedText)
+      .first();
+
+    if (product) {
+      handleAddToCart(product);
+      // Optional: Play beep sound
+      const audio = new Audio('/beep.mp3'); // Assuming you might add a beep sound later
+      audio.play().catch(() => { }); // Ignore error if file doesn't exist
+    } else {
+      alert(`Producto no encontrado: ${decodedText}`);
     }
   };
 
@@ -221,10 +242,7 @@ export default function POSTerminal() {
               <button
                 className="absolute right-2 top-2 p-1.5 hover:bg-gray-600 rounded-lg transition-colors text-gray-400 hover:text-blue-400"
                 title="Escanear con cámara"
-                onClick={() => {
-                  // TODO: Implementar escaneo con cámara
-                  alert('Función de escáner con cámara - En desarrollo');
-                }}
+                onClick={() => setShowScanner(true)}
               >
                 <Camera className="w-5 h-5" />
               </button>
@@ -430,6 +448,13 @@ export default function POSTerminal() {
           config={ticketConfig}
           user={user || undefined}
         />
+
+        {showScanner && (
+          <BarcodeScanner
+            onScanSuccess={handleScan}
+            onClose={() => setShowScanner(false)}
+          />
+        )}
       </div>
     </div>
   );
