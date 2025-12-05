@@ -48,7 +48,7 @@ export const useInventoryStore = create<InventoryState>((set) => ({
       const { data, error } = await supabase
         .from('inventory')
         .update({
-          quantity,
+          stock: quantity,
           updated_at: new Date().toISOString()
         })
         .eq('id', id)
