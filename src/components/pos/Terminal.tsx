@@ -248,8 +248,15 @@ export default function POSTerminal() {
                 className="bg-gray-800 hover:bg-gray-700 p-4 rounded-xl flex flex-col gap-2 transition-all border border-gray-700 hover:border-blue-500 group text-left h-48"
               >
                 <div className="h-20 w-full bg-gray-900 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
-                  {/* Placeholder for image */}
-                  <span className="text-gray-600 text-xs">NO IMG</span>
+                  {product.image_url ? (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-gray-600 text-xs">NO IMG</span>
+                  )}
                 </div>
                 <h3 className="font-bold truncate w-full text-sm">{product.name}</h3>
                 <div className="flex justify-between items-center w-full mt-auto">

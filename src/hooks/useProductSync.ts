@@ -51,7 +51,8 @@ export const useProductSync = (storeId?: string) => {
                     is_taxable: true, // Default
                     is_weighted: p.is_weighted || false,
                     sync_status: 'synced',
-                    last_modified: new Date()
+                    last_modified: new Date(),
+                    image_url: p.image_url
                 };
             });
 

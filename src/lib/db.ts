@@ -23,6 +23,7 @@ export interface Product {
   updated_at?: Date;
   last_modified?: Date;
   sync_status?: 'synced' | 'pending' | 'conflict';
+  image_url?: string;
 }
 
 // Interface for the alternative terminal implementation in modificaciones directory
@@ -47,6 +48,7 @@ export interface ProductLocal {
   updated_at?: Date;
   last_modified?: Date;
   sync_status?: 'synced' | 'pending' | 'conflict';
+  image_url?: string;
 }
 
 export interface CartItem {
