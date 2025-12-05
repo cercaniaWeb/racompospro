@@ -20,8 +20,8 @@ Deno.serve(async (req: Request) => {
 
         console.log(`Searching for image for: ${query}`)
 
-        const GOOGLE_API_KEY = Deno.env.get('GOOGLE_SEARCH_API_KEY') || 'AIzaSyBe35ZtohOVItffilo8U_TpDvmcPvTbi2I'
-        const GOOGLE_CX = Deno.env.get('GOOGLE_SEARCH_ENGINE_ID') || 'a4d22c7295cff4df5'
+        const GOOGLE_API_KEY = Deno.env.get('GOOGLE_SEARCH_API_KEY')
+        const GOOGLE_CX = Deno.env.get('GOOGLE_SEARCH_ENGINE_ID')
 
         let imageUrl = null
         let data = null
