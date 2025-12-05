@@ -1,0 +1,196 @@
+'use client';
+import React, { useState, useEffect, useRef } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db, CartItem, ProductLocal } from '@/lib/db';
+import { useScale } from '@/hooks/useScale';
+import { ShoppingCart, Search, Scale, Trash2, CreditCard, Banknote } from 'lucide-react';
+
+export default function POSTerminal() {
+  const [query, setQuery] = useState('');
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const { status: scaleStatus, data: scaleData, connect: connectScale } = useScale();
+  
+  // Referencia para el input de búsqueda (siempre mantener foco aquí)
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Búsqueda en tiempo real sobre Dexie (Local DB)
+  // Esto es instantáneo incluso con 50,000 productos
+  const searchResults = useLiveQuery(
+    () => db.products
+      .where('name').startsWithIgnoreCase(query)
+      .or('sku').equals(query)
+      .limit(10)
+      .toArray(),
+    [query]
+  );
+
+  // Lógica para agregar al carrito
+  const addToCart = (product: ProductLocal) => {
+    // Si es pesable, usamos el peso de la báscula o pedimos manual
+    let qty = 1;
+    if (product.is_weighted) {
+      if (scaleStatus === 'connected' && scaleData.weight > 0) {
+        qty = scaleData.weight;
+      } else {
+        const manualWeight = prompt(`Ingrese peso para ${product.name} (kg):`);
+        if (!manualWeight) return;
+        qty = parseFloat(manualWeight);
+      }
+    }
+
+    setCart(prev => {
+      const existing = prev.find(i => i.product_id === product.id);
+      if (existing && !product.is_weighted) {
+        // Si es unitario, sumamos. Si es pesado, agregamos nueva línea (opcional)
+        return prev.map(i => i.product_id === product.id 
+          ? { ...i, quantity: i.quantity + 1, subtotal: (i.quantity + 1) * i.price }
+          : i
+        );
+      }
+      return [...prev, {
+        product_id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: qty,
+        subtotal: qty * product.price,
+        is_weighted: product.is_weighted
+      }];
+    });
+    
+    setQuery(''); // Limpiar búsqueda
+    searchInputRef.current?.focus(); // Regresar foco
+  };
+
+  const total = cart.reduce((acc, item) => acc + item.subtotal, 0);
+
+  const handleCheckout = async (method: 'cash' | 'card') => {
+    if (cart.length === 0) return;
+
+    // 1. Guardar venta LOCALMENTE (Instantáneo)
+    await db.sales.add({
+      items: cart,
+      total,
+      payment_method: method,
+      status: 'pending', // Marcada para subir
+      created_at: new Date()
+    });
+
+    // 2. Limpiar UI
+    setCart([]);
+    alert('Venta registrada (Guardada localmente)');
+    
+    // 3. Intentar sincronizar en segundo plano (ver syncService)
+    // syncSales(); 
+  };
+
+  return (
+    <div className="h-screen flex flex-col lg:flex-row bg-gray-900 text-white p-4 gap-4">
+      
+      {/* IZQUIERDA: Catálogo y Buscador */}
+      <div className="flex-1 flex flex-col gap-4">
+        {/* Barra Superior */}
+        <div className="bg-gray-800 p-4 rounded-xl flex gap-4 items-center shadow-lg">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-3 text-gray-400" />
+            <input
+              ref={searchInputRef}
+              autoFocus
+              className="w-full bg-gray-700 text-white p-3 pl-10 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Buscar por nombre o escanear código de barras..."
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+          </div>
+          {/* Control de Báscula */}
+          <button 
+            onClick={connectScale}
+            className={`p-3 rounded-lg flex items-center gap-2 font-bold transition-colors ${
+              scaleStatus === 'connected' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-500'
+            }`}
+          >
+            <Scale size={20} />
+            {scaleStatus === 'connected' ? `${scaleData.weight.toFixed(3)} kg` : 'Conectar Báscula'}
+          </button>
+        </div>
+
+        {/* Grid de Productos */}
+        <div className="flex-1 overflow-y-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 content-start">
+          {searchResults?.map(product => (
+            <button
+              key={product.id}
+              onClick={() => addToCart(product)}
+              className="bg-gray-800 hover:bg-gray-700 p-4 rounded-xl flex flex-col gap-2 transition-all border border-gray-700 hover:border-blue-500 group text-left"
+            >
+              <div className="h-24 w-full bg-gray-900 rounded-lg mb-2 flex items-center justify-center">
+                <span className="text-gray-500 text-sm">IMG</span>
+              </div>
+              <h3 className="font-bold truncate w-full">{product.name}</h3>
+              <div className="flex justify-between items-center w-full mt-auto">
+                <span className="text-green-400 font-mono font-bold">${product.price.toFixed(2)}</span>
+                <span className="text-xs text-gray-400 bg-gray-900 px-2 py-1 rounded">
+                  {product.is_weighted ? 'KG' : 'UN'}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* DERECHA: Carrito y Totales */}
+      <div className="w-full lg:w-96 bg-gray-800 rounded-xl flex flex-col shadow-2xl border-l border-gray-700">
+        <div className="p-4 border-b border-gray-700 flex justify-between items-center">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <ShoppingCart /> Carrito actual
+          </h2>
+          <button onClick={() => setCart([])} className="text-red-400 hover:text-red-300 p-2">
+            <Trash2 size={20} />
+          </button>
+        </div>
+
+        {/* Lista de Items */}
+        <div className="flex-1 overflow-y-auto p-2 space-y-2">
+          {cart.length === 0 && (
+            <div className="h-full flex flex-col items-center justify-center text-gray-500 opacity-50">
+              <ShoppingCart size={48} className="mb-2" />
+              <p>El carrito está vacío</p>
+            </div>
+          )}
+          {cart.map((item, idx) => (
+            <div key={idx} className="bg-gray-700 p-3 rounded-lg flex justify-between items-center animate-in slide-in-from-right-5">
+              <div>
+                <p className="font-bold">{item.name}</p>
+                <p className="text-sm text-gray-400">
+                  {item.quantity.toFixed(item.is_weighted ? 3 : 0)} x ${item.price}
+                </p>
+              </div>
+              <span className="font-bold font-mono text-lg">${item.subtotal.toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Zona de Pago */}
+        <div className="p-6 bg-gray-900 border-t border-gray-700">
+          <div className="flex justify-between items-end mb-6">
+            <span className="text-gray-400">Total a pagar</span>
+            <span className="text-4xl font-bold text-green-400 font-mono">${total.toFixed(2)}</span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <button 
+              onClick={() => handleCheckout('cash')}
+              className="bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2"
+            >
+              <Banknote /> Efectivo
+            </button>
+            <button 
+              onClick={() => handleCheckout('card')}
+              className="bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2"
+            >
+              <CreditCard /> Tarjeta
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

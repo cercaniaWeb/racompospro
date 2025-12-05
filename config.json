@@ -1,0 +1,53 @@
+{
+  "name": "Equipo de Desarrollo Qwen Coder",
+  "agents": [
+    {
+      "name": "Project Manager",
+      "path": "agentes/project_manager.json"
+    },
+    {
+      "name": "Coder",
+      "path": "agentes/coder.json"
+    },
+    {
+      "name": "Reviewer",
+      "path": "agentes/reviewer.json"
+    },
+    {
+      "name": "Documenter",
+      "path": "agentes/documenter.json"
+    }
+  ],
+  "workflow": [
+    {
+      "from": "user",
+      "to": "Project Manager",
+      "instruction": "El Project Manager debe procesar la solicitud del usuario y comenzar el flujo."
+    },
+    {
+      "from": "Project Manager",
+      "to": "Coder",
+      "instruction": "El Coder implementa la funcionalidad principal."
+    },
+    {
+      "from": "Coder",
+      "to": "Reviewer",
+      "instruction": "El Reviewer inspecciona el código en busca de errores."
+    },
+    {
+      "from": "Reviewer",
+      "to": "Coder",
+      "instruction": "Si hay errores, el Coder los corrige (ciclo de iteración)."
+    },
+    {
+      "from": "Reviewer",
+      "to": "Documenter",
+      "instruction": "Si el código es aprobado, el Documenter crea la documentación."
+    },
+    {
+      "from": "Documenter",
+      "to": "user",
+      "instruction": "El resultado final se presenta al usuario."
+    }
+  ]
+}

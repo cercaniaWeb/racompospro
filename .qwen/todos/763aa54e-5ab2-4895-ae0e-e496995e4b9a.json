@@ -1,0 +1,25 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "content": "Create a list of non-functional files to move",
+      "status": "completed"
+    },
+    {
+      "id": "2",
+      "content": "Create a new directory for non-functional files",
+      "status": "completed"
+    },
+    {
+      "id": "3",
+      "content": "Move non-functional files to the new directory",
+      "status": "completed"
+    },
+    {
+      "id": "4",
+      "content": "Verify the organization of files",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "763aa54e-5ab2-4895-ae0e-e496995e4b9a"
+}

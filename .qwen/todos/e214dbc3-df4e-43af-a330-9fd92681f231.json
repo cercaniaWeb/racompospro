@@ -1,0 +1,40 @@
+{
+  "todos": [
+    {
+      "content": "Create a comprehensive README.md with complete application documentation",
+      "id": "1",
+      "status": "completed"
+    },
+    {
+      "content": "Describe the business model and inventory distribution system",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Document all application modules and pages",
+      "id": "3",
+      "status": "completed"
+    },
+    {
+      "content": "Document database tables and schema",
+      "id": "4",
+      "status": "completed"
+    },
+    {
+      "content": "Describe the offline-first architecture and synchronization",
+      "id": "5",
+      "status": "completed"
+    },
+    {
+      "content": "Document security and role-based access system",
+      "id": "6",
+      "status": "completed"
+    },
+    {
+      "content": "Review and finalize the documentation",
+      "id": "7",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "e214dbc3-df4e-43af-a330-9fd92681f231"
+}

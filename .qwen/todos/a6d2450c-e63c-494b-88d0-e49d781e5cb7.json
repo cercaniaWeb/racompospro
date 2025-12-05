@@ -1,0 +1,35 @@
+{
+  "todos": [
+    {
+      "content": "Check current state of POS implementation",
+      "id": "1",
+      "status": "completed"
+    },
+    {
+      "content": "Create POS route in app directory",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Update home page to include POS navigation",
+      "id": "3",
+      "status": "completed"
+    },
+    {
+      "content": "Update main navigation layout with POS links",
+      "id": "4",
+      "status": "completed"
+    },
+    {
+      "content": "Verify all POS functionality works as expected",
+      "id": "5",
+      "status": "completed"
+    },
+    {
+      "content": "Test offline functionality",
+      "id": "6",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "a6d2450c-e63c-494b-88d0-e49d781e5cb7"
+}

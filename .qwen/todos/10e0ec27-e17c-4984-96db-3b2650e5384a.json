@@ -1,0 +1,20 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "content": "Analyze current database configuration setup",
+      "status": "completed"
+    },
+    {
+      "id": "2",
+      "content": "Create a setup script to manage database configuration",
+      "status": "completed"
+    },
+    {
+      "id": "3",
+      "content": "Test the script to ensure it works properly",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "10e0ec27-e17c-4984-96db-3b2650e5384a"
+}

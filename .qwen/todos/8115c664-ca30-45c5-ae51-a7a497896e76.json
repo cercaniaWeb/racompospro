@@ -1,0 +1,25 @@
+{
+  "todos": [
+    {
+      "content": "Fix the nushell syntax error in env.nu file - change $PATH to $env.PATH",
+      "id": "1",
+      "status": "completed"
+    },
+    {
+      "content": "Verify if the htop++, qwen, and gemini binaries exist in the expected location",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Fix PATH environment variable to include the correct directories",
+      "id": "3",
+      "status": "completed"
+    },
+    {
+      "content": "Verify the commands work after the fixes",
+      "id": "4",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "8115c664-ca30-45c5-ae51-a7a497896e76"
+}

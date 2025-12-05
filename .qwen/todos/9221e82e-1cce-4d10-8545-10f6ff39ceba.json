@@ -1,0 +1,40 @@
+{
+  "todos": [
+    {
+      "content": "Verificar que los estilos se hayan aplicado correctamente en todas las páginas",
+      "id": "1",
+      "status": "completed"
+    },
+    {
+      "content": "Confirmar que la navegación superior es la única navegación",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Verificar que los modales tengan estilos uniformes",
+      "id": "3",
+      "status": "completed"
+    },
+    {
+      "content": "Confirmar que el sistema de notificaciones funcione correctamente",
+      "id": "4",
+      "status": "completed"
+    },
+    {
+      "content": "Realizar una operación de compra completa",
+      "id": "5",
+      "status": "completed"
+    },
+    {
+      "content": "Realizar una operación de traslado completa",
+      "id": "6",
+      "status": "in_progress"
+    },
+    {
+      "content": "Generar reporte de errores y repararlos si se encuentran",
+      "id": "7",
+      "status": "in_progress"
+    }
+  ],
+  "sessionId": "9221e82e-1cce-4d10-8545-10f6ff39ceba"
+}

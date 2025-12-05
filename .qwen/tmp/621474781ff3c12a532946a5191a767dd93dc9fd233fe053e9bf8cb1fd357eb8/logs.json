@@ -1,0 +1,51 @@
+[
+  {
+    "sessionId": "cb34d459-2748-4fc3-8a12-56de52d6bf95",
+    "messageId": 0,
+    "type": "user",
+    "message": "npm run dev",
+    "timestamp": "2025-11-06T08:31:05.699Z"
+  },
+  {
+    "sessionId": "cb34d459-2748-4fc3-8a12-56de52d6bf95",
+    "messageId": 1,
+    "type": "user",
+    "message": "/terminal-setup\n\n/terminal-setup\n\nnpm run dev stop",
+    "timestamp": "2025-11-06T08:33:25.096Z"
+  },
+  {
+    "sessionId": "cb34d459-2748-4fc3-8a12-56de52d6bf95",
+    "messageId": 2,
+    "type": "user",
+    "message": "realiza el commit \"descuento inventario\"",
+    "timestamp": "2025-11-06T08:34:05.522Z"
+  },
+  {
+    "sessionId": "cb34d459-2748-4fc3-8a12-56de52d6bf95",
+    "messageId": 3,
+    "type": "user",
+    "message": "realiza el commit \"inventario descuento\"",
+    "timestamp": "2025-11-06T08:34:22.554Z"
+  },
+  {
+    "sessionId": "cb34d459-2748-4fc3-8a12-56de52d6bf95",
+    "messageId": 4,
+    "type": "user",
+    "message": "en español",
+    "timestamp": "2025-11-06T08:34:58.463Z"
+  },
+  {
+    "sessionId": "cb34d459-2748-4fc3-8a12-56de52d6bf95",
+    "messageId": 5,
+    "type": "user",
+    "message": "no",
+    "timestamp": "2025-11-06T08:35:36.638Z"
+  },
+  {
+    "sessionId": "cb34d459-2748-4fc3-8a12-56de52d6bf95",
+    "messageId": 6,
+    "type": "user",
+    "message": "haz el push",
+    "timestamp": "2025-11-06T08:35:45.160Z"
+  }
+]

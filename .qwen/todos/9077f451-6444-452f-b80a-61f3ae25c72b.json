@@ -1,0 +1,30 @@
+{
+  "todos": [
+    {
+      "content": "Analizar los errores de conexión con Supabase y el error 401 Unauthorized",
+      "id": "1",
+      "status": "completed"
+    },
+    {
+      "content": "Revisar la configuración de autenticación de Supabase",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Verificar las políticas de Row Level Security (RLS) para las tablas categories y stores",
+      "id": "3",
+      "status": "completed"
+    },
+    {
+      "content": "Comprobar la configuración de permisos para agregar categorías y tiendas por defecto",
+      "id": "4",
+      "status": "completed"
+    },
+    {
+      "content": "Solucionar el problema de creación de filas que viola las políticas de RLS",
+      "id": "5",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "9077f451-6444-452f-b80a-61f3ae25c72b"
+}

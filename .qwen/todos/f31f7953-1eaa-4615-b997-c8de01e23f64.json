@@ -1,0 +1,35 @@
+{
+  "todos": [
+    {
+      "content": "Create a comprehensive testing plan for the POS application login and main screen",
+      "id": "1",
+      "status": "completed"
+    },
+    {
+      "content": "Delegate login functionality testing with provided credentials",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Delegate zoom and scroll testing to identify visual issues",
+      "id": "3",
+      "status": "completed"
+    },
+    {
+      "content": "Delegate accessibility and styling error detection",
+      "id": "4",
+      "status": "completed"
+    },
+    {
+      "content": "Delegate navigation and navbar issues investigation",
+      "id": "5",
+      "status": "completed"
+    },
+    {
+      "content": "Generate final report with findings",
+      "id": "6",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "f31f7953-1eaa-4615-b997-c8de01e23f64"
+}

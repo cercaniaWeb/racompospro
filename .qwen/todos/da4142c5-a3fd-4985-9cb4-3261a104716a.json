@@ -1,0 +1,25 @@
+{
+  "todos": [
+    {
+      "content": "Buscar el modal de configuración mencionado",
+      "id": "1",
+      "status": "completed"
+    },
+    {
+      "content": "Investigar cómo se manejan actualmente las categorías en el sistema",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Diseñar interfaz para crear categorías y subcategorías",
+      "id": "3",
+      "status": "completed"
+    },
+    {
+      "content": "Implementar backend para gestionar categorías y subcategorías",
+      "id": "4",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "da4142c5-a3fd-4985-9cb4-3261a104716a"
+}

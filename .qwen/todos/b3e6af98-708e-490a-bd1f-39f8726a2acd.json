@@ -1,0 +1,35 @@
+{
+  "todos": [
+    {
+      "content": "Iniciar el ecosistema EcoDev",
+      "id": "1",
+      "status": "completed"
+    },
+    {
+      "content": "Verificar disponibilidad de herramientas MCP",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Explorar proyecto en /home/lr/ecoDev/work/Proyectos/POStheme/",
+      "id": "3",
+      "status": "completed"
+    },
+    {
+      "content": "Planificar estrategia de testing para proyecto POStheme",
+      "id": "4",
+      "status": "completed"
+    },
+    {
+      "content": "Solicitar testing del proyecto",
+      "id": "5",
+      "status": "completed"
+    },
+    {
+      "content": "Implementar correcciones si es necesario",
+      "id": "6",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "b3e6af98-708e-490a-bd1f-39f8726a2acd"
+}

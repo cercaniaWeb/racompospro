@@ -1,0 +1,80 @@
+{
+  "todos": [
+    {
+      "content": "Crear carpera pruebas_test en la raíz del proyecto",
+      "id": "1",
+      "status": "completed"
+    },
+    {
+      "content": "Iniciar navegador para pruebas en http://localhost:5173",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Realizar navegación por las principales secciones del sitio",
+      "id": "3",
+      "status": "completed"
+    },
+    {
+      "content": "Tomar capturas de pantalla de las vistas principales",
+      "id": "4",
+      "status": "completed"
+    },
+    {
+      "content": "Comparar vistas con respecto a un estado previo si está disponible",
+      "id": "5",
+      "status": "pending"
+    },
+    {
+      "content": "Documentar cualquier error encontrado durante las pruebas",
+      "id": "6",
+      "status": "completed"
+    },
+    {
+      "content": "Agregar informe detallado con los resultados de las pruebas a la carpeta pruebas_test",
+      "id": "7",
+      "status": "completed"
+    },
+    {
+      "content": "Solucionar error de sintaxis en POSDashboard.tsx",
+      "id": "8",
+      "status": "completed"
+    },
+    {
+      "content": "Tomar captura de pantalla de la página principal corregida",
+      "id": "9",
+      "status": "completed"
+    },
+    {
+      "content": "Solucionar nuevo error de sintaxis introducido",
+      "id": "10",
+      "status": "completed"
+    },
+    {
+      "content": "Verificar que la aplicación esté funcionando correctamente después de las correcciones",
+      "id": "11",
+      "status": "completed"
+    },
+    {
+      "content": "Solucionar error de sintaxis actual en la línea 612",
+      "id": "12",
+      "status": "completed"
+    },
+    {
+      "content": "Instalar dependencia framer-motion faltante",
+      "id": "13",
+      "status": "completed"
+    },
+    {
+      "content": "Solucionar error de contexto de NotificationProvider",
+      "id": "14",
+      "status": "completed"
+    },
+    {
+      "content": "Reiniciar el servidor para aplicar la corrección de la ruta de importación",
+      "id": "15",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "0bf0d03e-7874-4fe2-a8be-dfbf2d0d3073"
+}

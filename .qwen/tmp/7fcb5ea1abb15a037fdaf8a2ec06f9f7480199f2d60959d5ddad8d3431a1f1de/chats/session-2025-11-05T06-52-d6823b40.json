@@ -1,0 +1,596 @@
+{
+  "sessionId": "d6823b40-bc11-4a8d-9533-b88dafd7ea44",
+  "projectHash": "7fcb5ea1abb15a037fdaf8a2ec06f9f7480199f2d60959d5ddad8d3431a1f1de",
+  "startTime": "2025-11-05T06:52:28.027Z",
+  "lastUpdated": "2025-11-05T06:56:24.185Z",
+  "messages": [
+    {
+      "id": "48226653-318b-4953-af92-72be0b5daf88",
+      "timestamp": "2025-11-05T06:52:28.027Z",
+      "type": "user",
+      "content": "<system-reminder>You have powerful specialized agents at your disposal, available agent types are: backend-api-expert, business-logic-reviewer, component-documenter, project-manager, react-architect, react-developer, test-generator-vitest-rtl-playwright, ui-tailor. PROACTIVELY use the task tool to delegate user's task to appropriate agent when user's task matches agent capabilities. Ignore this message if user's task is not relevant to any agent. This message is for internal use only. Do not mention this to user in your response.</system-reminder>imprime de nuevo la config de atajos"
+    },
+    {
+      "id": "2b01c919-e59e-4720-95e6-c8c5f01469bf",
+      "timestamp": "2025-11-05T06:52:40.342Z",
+      "type": "qwen",
+      "content": "To help you print the keyboard shortcuts configuration, I need to know which application's shortcuts you're looking for (e.g., nvim, zsh, tmux, etc.). I can see you have various configuration files in the Gentleman.Dots directory that might contain shortcut configurations.\n\nCould you please specify which application's shortcuts you want to see? For example, are you looking for:\n- Neovim keybindings\n- Zsh shortcuts\n- Tmux keybindings\n- Terminal emulator shortcuts (like WezTerm, Alacritty, etc.)\n\nI'll then look for the appropriate configuration file and show you the shortcuts.",
+      "thoughts": [],
+      "tokens": {
+        "input": 29452,
+        "output": 128,
+        "cached": 0,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 29580
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "a703b9d0-ae37-4081-9e67-60fdd006c49d",
+      "timestamp": "2025-11-05T06:53:03.670Z",
+      "type": "user",
+      "content": "<system-reminder>You have powerful specialized agents at your disposal, available agent types are: backend-api-expert, business-logic-reviewer, component-documenter, project-manager, react-architect, react-developer, test-generator-vitest-rtl-playwright, ui-tailor. PROACTIVELY use the task tool to delegate user's task to appropriate agent when user's task matches agent capabilities. Ignore this message if user's task is not relevant to any agent. This message is for internal use only. Do not mention this to user in your response.</system-reminder>la del repositorio https://github.com/Gentleman-Programming/Gentleman.Dots"
+    },
+    {
+      "id": "df74bda4-a1ae-4bc7-93b5-0b8754ad032a",
+      "timestamp": "2025-11-05T06:53:13.083Z",
+      "type": "qwen",
+      "content": "Let me look for the keyboard shortcuts configuration in the Gentleman.Dots repository. I'll search for the relevant configuration files that might contain keybindings.",
+      "thoughts": [],
+      "tokens": {
+        "input": 29729,
+        "output": 75,
+        "cached": 29448,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 29804
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "6974195c-6654-41f7-8b48-c5e3d09f427a",
+      "timestamp": "2025-11-05T06:53:15.959Z",
+      "type": "qwen",
+      "content": "Let me check what's in the GentlemanNvim directory:",
+      "thoughts": [],
+      "tokens": {
+        "input": 29848,
+        "output": 54,
+        "cached": 29725,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 29902
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "e9dbfb54-69a2-4f13-bea9-1e83a4f57901",
+      "timestamp": "2025-11-05T06:53:18.432Z",
+      "type": "qwen",
+      "content": "Let me explore the nvim directory:",
+      "thoughts": [],
+      "tokens": {
+        "input": 29949,
+        "output": 51,
+        "cached": 29844,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 30000
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "bb7fd62d-3c46-439e-aeb4-13dcd792ea19",
+      "timestamp": "2025-11-05T06:53:25.974Z",
+      "type": "qwen",
+      "content": "Great! Let me read the main init.lua file to see the Neovim configuration:",
+      "thoughts": [],
+      "tokens": {
+        "input": 30075,
+        "output": 65,
+        "cached": 29945,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 30140
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "39592918-b977-4fd6-8a5e-50533e547033",
+      "timestamp": "2025-11-05T06:53:29.251Z",
+      "type": "qwen",
+      "content": "Now let me check the config.lazy file, which likely contains the main plugin configuration:",
+      "thoughts": [],
+      "tokens": {
+        "input": 30212,
+        "output": 68,
+        "cached": 30071,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 30280
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "cd2ba6d3-bf01-4f3d-95d9-7fd252ff9e42",
+      "timestamp": "2025-11-05T06:53:32.527Z",
+      "type": "qwen",
+      "content": "Now let me check the plugins directory to see any custom plugin configurations that might contain keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 31490,
+        "output": 64,
+        "cached": 30208,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 31554
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "bdef7d3e-f810-46c9-8441-57a8d0d3192b",
+      "timestamp": "2025-11-05T06:53:34.781Z",
+      "type": "qwen",
+      "content": "Let me check the plugins directory:",
+      "thoughts": [],
+      "tokens": {
+        "input": 31609,
+        "output": 53,
+        "cached": 31486,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 31662
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "5c0ccb70-6cc7-437a-82cc-4491bcf8f840",
+      "timestamp": "2025-11-05T06:53:37.246Z",
+      "type": "qwen",
+      "content": "Let me look at the which-key.lua file, which is likely to contain keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 31825,
+        "output": 70,
+        "cached": 31605,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 31895
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "10c250f3-0300-4abd-acd9-42989cb02021",
+      "timestamp": "2025-11-05T06:53:39.955Z",
+      "type": "qwen",
+      "content": "Let me check the editor.lua file, which might contain more keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 32137,
+        "output": 65,
+        "cached": 31821,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 32202
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "ae595f82-5e87-4ef3-ac4f-3eb7383f5ea6",
+      "timestamp": "2025-11-05T06:53:43.191Z",
+      "type": "qwen",
+      "content": "Let me check the overrides.lua file, which might contain keybinding overrides:",
+      "thoughts": [],
+      "tokens": {
+        "input": 32927,
+        "output": 66,
+        "cached": 32133,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 32993
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "fe53ecfe-f0b0-426d-9269-afc173cf9117",
+      "timestamp": "2025-11-05T06:53:46.875Z",
+      "type": "qwen",
+      "content": "Let me check the ui.lua file for more keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 33506,
+        "output": 62,
+        "cached": 32923,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 33568
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "1cfb3c3e-9a6a-4963-acc9-6a6ca691f5ef",
+      "timestamp": "2025-11-05T06:53:52.187Z",
+      "type": "qwen",
+      "content": "Let me check the fzflua.lua file for more keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 36251,
+        "output": 67,
+        "cached": 33502,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 36318
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "4036524e-d719-490a-8e22-f83ab44ba8d7",
+      "timestamp": "2025-11-05T06:53:55.338Z",
+      "type": "qwen",
+      "content": "Let me check the nvim-dap.lua file for debugging keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 36365,
+        "output": 68,
+        "cached": 36247,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 36433
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "a266386f-7d7c-431c-9845-a9a6cd88cb14",
+      "timestamp": "2025-11-05T06:53:59.156Z",
+      "type": "qwen",
+      "content": "Let me check the copilot.lua file for AI-related keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 37782,
+        "output": 65,
+        "cached": 36361,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 37847
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "ecb5d1d0-bf7b-4d30-920e-9344eeedec4a",
+      "timestamp": "2025-11-05T06:54:02.837Z",
+      "type": "qwen",
+      "content": "Let me check the copilot-chat.lua file:",
+      "thoughts": [],
+      "tokens": {
+        "input": 37971,
+        "output": 62,
+        "cached": 37778,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 38033
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "f5e71e0c-91d0-4cad-b4cc-886449c623aa",
+      "timestamp": "2025-11-05T06:54:06.319Z",
+      "type": "qwen",
+      "content": "Let me check the vim-be-good.lua file which might contain more keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 39691,
+        "output": 69,
+        "cached": 37967,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 39760
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "4632601d-37e6-4ecc-b1a5-645cd59b97e3",
+      "timestamp": "2025-11-05T06:54:10.404Z",
+      "type": "qwen",
+      "content": "Let me check the twilight.lua file:",
+      "thoughts": [],
+      "tokens": {
+        "input": 39851,
+        "output": 60,
+        "cached": 39687,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 39911
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "a9d0b3f4-7199-4875-8cd7-0b47a1fa5adc",
+      "timestamp": "2025-11-05T06:54:15.332Z",
+      "type": "qwen",
+      "content": "Let me check the oil.lua file for file manager keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 40001,
+        "output": 64,
+        "cached": 39847,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 40065
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "8fb83db3-a4ea-4958-b4e3-1c631bdd5f8e",
+      "timestamp": "2025-11-05T06:54:20.260Z",
+      "type": "qwen",
+      "content": "Let me check the vim-tmux-navigation.lua file:",
+      "thoughts": [],
+      "tokens": {
+        "input": 41607,
+        "output": 65,
+        "cached": 39997,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 41672
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "a4840983-3255-4ac2-b5c5-d23977122090",
+      "timestamp": "2025-11-05T06:54:23.932Z",
+      "type": "qwen",
+      "content": "Let me check the config directory to see if there are any additional configuration files with keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 41772,
+        "output": 65,
+        "cached": 41603,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 41837
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "e50bea76-4cea-4463-817b-83ebb1ee0827",
+      "timestamp": "2025-11-05T06:54:27.927Z",
+      "type": "qwen",
+      "content": "Perfect! Let me check the keymaps.lua file, which is likely to contain the main keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 41908,
+        "output": 72,
+        "cached": 41768,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 41980
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "dee36f7f-90db-469c-b160-830762f32ab0",
+      "timestamp": "2025-11-05T06:54:31.715Z",
+      "type": "qwen",
+      "content": "Now let me check if there are any other keymap files in the config/gentleman directory:",
+      "thoughts": [],
+      "tokens": {
+        "input": 43938,
+        "output": 71,
+        "cached": 41904,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 44009
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "66e9a6e6-513d-48bf-9775-89668e10b5a5",
+      "timestamp": "2025-11-05T06:54:35.812Z",
+      "type": "qwen",
+      "content": "Let me check the utils.lua file to see if it contains any relevant keybinding functions:",
+      "thoughts": [],
+      "tokens": {
+        "input": 44062,
+        "output": 72,
+        "cached": 43934,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 44134
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "fe1ad227-2b88-459d-b3f9-2b51c918502d",
+      "timestamp": "2025-11-05T06:54:40.351Z",
+      "type": "qwen",
+      "content": "Let me also check the autocmds.lua file to see if there are any keybinding-related configurations:",
+      "thoughts": [],
+      "tokens": {
+        "input": 45544,
+        "output": 75,
+        "cached": 44058,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 45619
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "e92909fa-5afd-4b9c-952b-2b693dafacc2",
+      "timestamp": "2025-11-05T06:54:43.901Z",
+      "type": "qwen",
+      "content": "Let me check the options.lua file too:",
+      "thoughts": [],
+      "tokens": {
+        "input": 45693,
+        "output": 59,
+        "cached": 45540,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 45752
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "39258473-4ec9-4971-a070-3d47a487e476",
+      "timestamp": "2025-11-05T06:54:47.099Z",
+      "type": "qwen",
+      "content": "Now let me check the GentlemanZsh directory for shell shortcuts:",
+      "thoughts": [],
+      "tokens": {
+        "input": 45815,
+        "output": 55,
+        "cached": 45689,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 45870
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "bd1cf76b-f8a2-4b40-9dc4-bf7b3c171b25",
+      "timestamp": "2025-11-05T06:54:51.374Z",
+      "type": "qwen",
+      "content": "Let me check the .zshrc file for shell shortcuts:",
+      "thoughts": [],
+      "tokens": {
+        "input": 45931,
+        "output": 60,
+        "cached": 45811,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 45991
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "f66d6478-ce51-46d7-97f8-28759b960ec2",
+      "timestamp": "2025-11-05T06:54:55.893Z",
+      "type": "qwen",
+      "content": "Let me check the .p10k.zsh file for more shell configurations:",
+      "thoughts": [],
+      "tokens": {
+        "input": 46916,
+        "output": 67,
+        "cached": 45927,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 46983
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "79afafed-538a-4458-b7e4-1db2edd895d7",
+      "timestamp": "2025-11-05T06:55:14.426Z",
+      "type": "qwen",
+      "content": "Now let me check the GentlemanTmux directory to see if there are any tmux keybindings:",
+      "thoughts": [],
+      "tokens": {
+        "input": 72608,
+        "output": 62,
+        "cached": 46912,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 72670
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "2c7b8ef8-f5aa-4c41-9b46-11c0c7537439",
+      "timestamp": "2025-11-05T06:55:28.752Z",
+      "type": "qwen",
+      "content": "Let me check the tmux.conf file for tmux shortcuts:",
+      "thoughts": [],
+      "tokens": {
+        "input": 72720,
+        "output": 59,
+        "cached": 72604,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 72779
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "7d233189-13fe-4c7b-bd2a-5e49c5ca4129",
+      "timestamp": "2025-11-05T06:55:33.154Z",
+      "type": "qwen",
+      "content": "Now let me check the GentlemanZellij directory to see if there are any zellij shortcuts:",
+      "thoughts": [],
+      "tokens": {
+        "input": 73298,
+        "output": 61,
+        "cached": 72716,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 73359
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "7e02d38e-4bcc-4004-87c1-52c062b784f7",
+      "timestamp": "2025-11-05T06:55:37.272Z",
+      "type": "qwen",
+      "content": "Let me check the zellij directory:",
+      "thoughts": [],
+      "tokens": {
+        "input": 73406,
+        "output": 51,
+        "cached": 73294,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 73457
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "472a830d-9592-4a50-91b6-1c1316e51458",
+      "timestamp": "2025-11-05T06:55:41.348Z",
+      "type": "qwen",
+      "content": "Let me check the zellij config file:",
+      "thoughts": [],
+      "tokens": {
+        "input": 73514,
+        "output": 57,
+        "cached": 73402,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 73571
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "a67fca5f-7468-4ebd-aa45-25f77202c4f2",
+      "timestamp": "2025-11-05T06:55:46.064Z",
+      "type": "qwen",
+      "content": "Let me also check the README.md file in the main directory to see if it contains any information about the shortcuts:",
+      "thoughts": [],
+      "tokens": {
+        "input": 79054,
+        "output": 63,
+        "cached": 73510,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 79117
+      },
+      "model": "coder-model"
+    },
+    {
+      "id": "df3c1778-738c-4956-afa5-2a2c66962224",
+      "timestamp": "2025-11-05T06:56:24.185Z",
+      "type": "qwen",
+      "content": "Now I have a comprehensive understanding of the keyboard shortcuts configuration in the Gentleman.Dots repository. Let me compile a summary of all the key shortcuts from the different components:\n\n## Summary of Keyboard Shortcuts in Gentleman.Dots Repository\n\n### Neovim Shortcuts\nThe main keybindings are defined in `/home/lr/ecoDev/documenting/nvim/Gentleman.Dots/GentlemanNvim/nvim/lua/config/keymaps.lua`:\n\n#### Basic Shortcuts:\n- `<C-b>` - Delete to the end of the word in insert mode without leaving insert mode\n- `<C-c>` - Escape from other modes (insert, normal, visual)\n- `<leader>uk` - Toggle Screenkey\n- `<leader>bq` - Delete all buffers but the current one\n- `<C-s>` - Save file with custom function\n- `<leader>md` - Delete all marks\n\n#### Tmux Navigation (with nvim-tmux-navigation plugin):\n- `<C-h>` - Navigate to the left pane\n- `<C-j>` - Navigate to the bottom pane\n- `<C-k>` - Navigate to the top pane\n- `<C-l>` - Navigate to the right pane\n- `<C-\\>` - Navigate to the last active pane\n- `<C-Space>` - Navigate to the next pane\n\n#### Obsidian Integration:\n- `<leader>oc` - Check Obsidian checkbox\n- `<leader>ot` - Insert Obsidian template\n- `<leader>oo` - Open in Obsidian App\n- `<leader>ob` - Show Obsidian backlinks\n- `<leader>ol` - Show Obsidian links\n- `<leader>on` - Create new note\n- `<leader>os` - Search Obsidian\n- `<leader>oq` - Quick switch\n\n#### Oil (file manager):\n- `-` - Open parent directory\n- `<leader>E` - Open Oil in floating mode\n\n#### Visual Mode Grep:\n- `<leader>sg` - Grep selected text\n- `<leader>sG` - Grep selected text (root directory)\n\n### Additional Shortcuts from Other Plugin Files:\n\n#### DAP (Debug Adapter Protocol):\n- `<leader>d` - Debug group\n- `<leader>dB` - Set breakpoint condition\n- `<leader>db` - Toggle breakpoint\n- `<leader>dc` - Continue\n- `<leader>da` - Run with Args\n- `<leader>dC` - Run to cursor\n- `<leader>dg` - Go to line (no execute)\n- `<leader>di` - Step into\n- `<leader>dj` - Down\n- `<leader>dk` - Up\n- `<leader>dl` - Run last\n- `<leader>do` - Step out\n- `<leader>dO` - Step over\n- `<leader>dp` - Pause\n- `<leader>dr` - Toggle REPL\n- `<leader>ds` - Session\n- `<leader>dt` - Terminate\n- `<leader>dw` - Widgets\n\n#### Oil Keymaps:\n- `g?` - Show help\n- `<CR>` - Select\n- `<C-s>` - Open in vertical split\n- `<C-v>` - Open in horizontal split\n- `<C-t>` - Open in new tab\n- `<C-p>` - Preview\n- `<C-c>` - Close\n- `<C-r>` - Refresh\n- `-` - Go to parent\n- `_` - Open CWD\n- `` ` `` - Change directory\n- `~` - Change directory in tab\n- `gs` - Change sort\n- `gx` - Open external\n- `g.` - Toggle hidden\n- `g\\` - Toggle trash\n\n#### Copilot Chat Mappings:\n- `<Tab>` (insert) - Complete\n- `q` (normal) / `<C-c>` (insert) - Close\n- `<C-l>` (both modes) - Reset\n- `<CR>` (normal) / `<C-s>` (insert) - Submit prompt\n- `grr` (normal) - Toggle sticky\n- `grx` (normal) - Clear stickies\n- `<C-y>` (both modes) - Accept diff\n- `gj` (normal) - Jump to diff\n- `gqa` (normal) - Quickfix answers\n- `gqd` (normal) - Quickfix diffs\n- `gy` (normal) - Yank diff\n- `gd` (normal) - Show diff\n- `gi` (normal) - Show info\n- `gc` (normal) - Show context\n- `gh` (normal) - Show help\n\n### Tmux Shortcuts\nDefined in `/home/lr/ecoDev/documenting/nvim/Gentleman.Dots/GentlemanTmux/tmux.conf`:\n\n#### Basic Keymaps:\n- `C-a` - Prefix key (instead of default `C-b`)\n- `C-a C-a` - Send prefix\n- `v` - Split window horizontally\n- `d` - Split window vertically\n- `K` - Kill all other sessions\n\n### Zellij Shortcuts\nDefined in `/home/lr/ecoDev/documenting/nvim/Gentleman.Dots/GentlemanZellij/zellij/config.kdl`:\n\n#### Locked Mode:\n- `Ctrl g` - Switch to normal mode\n\n#### Pane Operations:\n- `left` - Move focus left\n- `down` - Move focus down\n- `up` - Move focus up\n- `right` - Move focus right\n- `c` - Switch to rename pane mode\n- `d` - New pane down + lock\n- `e` - Toggle pane embed/floating + lock\n- `f` - Toggle focus fullscreen + lock\n- `h` - Move focus left\n- `j` - Move focus down\n- `k` - Move focus up\n- `l` - Move focus right\n- `n` - New pane + lock\n- `p` - Switch to normal mode\n- `r` - New pane right + lock\n- `w` - Toggle floating panes + lock\n- `x` - Close focus + lock\n- `z` - Toggle pane frames + lock\n- `tab` - Switch focus\n\n#### Tab Operations:\n- `1-9` - Go to tab 1-9 + lock\n- `b` - Break pane + lock\n- `n` - New tab + lock\n- `r` - Switch to rename tab mode\n- `s` - Toggle active sync tab + lock\n- `t` - Switch to normal mode\n- `x` - Close tab + lock\n- `tab` - Toggle tab\n\n#### Resize Operations:\n- `+` / `=` - Increase size\n- `-` - Decrease size\n- `H-J-K-L` - Decrease in direction\n- `h-j-k-l` - Increase in direction\n- `r` - Switch to normal mode\n\n#### Session Operations:\n- `c` - Launch configuration plugin + lock\n- `d` - Detach\n- `o` - Switch to normal mode\n- `p` - Launch plugin manager + lock\n- `w` - Launch session manager + lock\n\n#### Global Operations (Normal/Locked modes):\n- `Alt + arrow keys` - Move focus/tab\n- `Alt +` / `Alt =` - Increase size\n- `Alt -` - Decrease size\n- `Alt [` / `Alt ]` - Previous/Next swap layout\n- `Alt f` - Toggle floating panes\n- `Alt h-j-k-l` - Move focus/tab\n- `Alt i` / `Alt o` - Move tab left/right\n- `Alt n` - New pane\n\nThese are the comprehensive keyboard shortcuts configured in the Gentleman.Dots repository across Neovim, Tmux, and Zellij.",
+      "thoughts": [],
+      "tokens": {
+        "input": 84615,
+        "output": 1657,
+        "cached": 79050,
+        "thoughts": 0,
+        "tool": 0,
+        "total": 86272
+      },
+      "model": "coder-model"
+    }
+  ]
+}

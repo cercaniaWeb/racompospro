@@ -1,0 +1,55 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "content": "Preparación del Servidor: Verificar que la aplicación de React esté corriendo en http://localhost:5173",
+      "status": "completed"
+    },
+    {
+      "id": "2",
+      "content": "Limpieza del Contexto: Limpiar cookies y caché del navegador",
+      "status": "completed"
+    },
+    {
+      "id": "3",
+      "content": "Navegación y Espera: Navegar a la URL y esperar a que carguen todos los recursos",
+      "status": "completed"
+    },
+    {
+      "id": "4",
+      "content": "Flujo de Interacción: Realizar inicio de sesión con credenciales",
+      "status": "completed"
+    },
+    {
+      "id": "5",
+      "content": "Espera Condicional: Esperar a que aparezca el elemento clave del dashboard",
+      "status": "completed"
+    },
+    {
+      "id": "6",
+      "content": "Diagnóstico Consola/Network: Reportar errores y advertencias de JavaScript",
+      "status": "completed"
+    },
+    {
+      "id": "7",
+      "content": "Diagnóstico Network: Analizar fallos de API de Supabase",
+      "status": "completed"
+    },
+    {
+      "id": "8",
+      "content": "Diagnóstico Backend: Revisar Reglas de RLS y definición de tabla",
+      "status": "completed"
+    },
+    {
+      "id": "9",
+      "content": "Corrección de Código: Aplicar soluciones a archivos fuente",
+      "status": "completed"
+    },
+    {
+      "id": "10",
+      "content": "Verificación Final: Comprobar que la aplicación sea funcional, estable y visualmente correcta",
+      "status": "completed"
+    }
+  ],
+  "sessionId": "8860abc2-d6a3-46f7-8e30-fb5d5ceed896"
+}

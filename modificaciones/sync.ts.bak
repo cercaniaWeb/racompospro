@@ -1,0 +1,102 @@
+import { createClient } from '@supabase/supabase-js';
+import { db, ProductLocal, SaleLocal } from '@/lib/db';
+
+// Cliente Supabase (usando variables de entorno)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+/**
+ * Descarga el catálogo completo de Supabase a IndexedDB
+ * Se debe ejecutar al inicio del turno o botón "Actualizar Catálogo"
+ */
+export const syncProductsDown = async () => {
+  try {
+    // 1. Traer productos de la nube (Supabase)
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_active', true); // Solo activos
+
+    if (error) throw error;
+
+    if (data) {
+      // 2. Mapear al formato local
+      const productsLocal: ProductLocal[] = data.map(p => ({
+        id: p.id,
+        name: p.name,
+        price: p.selling_price, // Nota: Mapeo de snake_case a camelCase local implícito
+        sku: p.sku,
+        category_id: p.category_id,
+        is_weighted: p.is_weighted, // Supabase field
+        stock_local: 0 // El stock real se consulta aparte o se gestiona por lotes
+      }));
+
+      // 3. Transacción masiva en Dexie (Bulk Put)
+      // Esto actualiza o inserta miles de productos en milisegundos
+      await db.transaction('rw', db.products, async () => {
+        await db.products.clear(); // Opción radical: borrar todo y rellenar (más seguro para evitar zombies)
+        await db.products.bulkAdd(productsLocal);
+      });
+      
+      console.log(`Sincronizados ${productsLocal.length} productos.`);
+    }
+  } catch (err) {
+    console.error('Error sincronizando productos:', err);
+  }
+};
+
+/**
+ * Sube las ventas pendientes de Dexie a Supabase
+ * Se ejecuta después de cada venta o por intervalo
+ */
+export const syncSalesUp = async () => {
+  // 1. Buscar ventas locales con estado 'pending'
+  const pendingSales = await db.sales.where('status').equals('pending').toArray();
+
+  if (pendingSales.length === 0) return;
+
+  console.log(`Sincronizando ${pendingSales.length} ventas...`);
+
+  for (const sale of pendingSales) {
+    try {
+      // 2. Insertar cabecera de venta en Supabase
+      const { data: saleData, error: saleError } = await supabase
+        .from('sales')
+        .insert({
+          total_amount: sale.total,
+          store_id: 'uuid-de-la-tienda-actual', // Debes obtener esto del contexto de auth
+          status: 'completed',
+          created_at: sale.created_at.toISOString()
+        })
+        .select()
+        .single();
+
+      if (saleError) throw saleError;
+
+      // 3. Preparar items para inserción masiva
+      const saleItems = sale.items.map(item => ({
+        sale_id: saleData.id, // ID generado por Postgres
+        product_id: item.product_id,
+        quantity: item.quantity,
+        unit_price: item.price,
+        total_price: item.subtotal
+      }));
+
+      // 4. Insertar detalle de items
+      const { error: itemsError } = await supabase
+        .from('sale_items')
+        .insert(saleItems);
+
+      if (itemsError) throw itemsError;
+
+      // 5. Si todo éxito, marcar como 'synced' localmente o borrar
+      await db.sales.update(sale.id!, { status: 'synced', uuid: saleData.id });
+
+    } catch (err) {
+      console.error(`Error subiendo venta ${sale.id}:`, err);
+      // Aquí no borramos, se reintentará en la próxima ejecución
+    }
+  }
+};

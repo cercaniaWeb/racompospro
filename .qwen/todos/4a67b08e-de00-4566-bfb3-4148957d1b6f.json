@@ -1,0 +1,40 @@
+{
+  "todos": [
+    {
+      "content": "Configurar el repositorio remoto con la URL proporcionada",
+      "id": "1",
+      "status": "in_progress"
+    },
+    {
+      "content": "Verificar el estado actual del repositorio",
+      "id": "2",
+      "status": "completed"
+    },
+    {
+      "content": "Agregar el archivo README.md al staging",
+      "id": "3",
+      "status": "in_progress"
+    },
+    {
+      "content": "Crear el primer commit con el mensaje \"first commit\"",
+      "id": "4",
+      "status": "pending"
+    },
+    {
+      "content": "Renombrar la rama actual a \"main\"",
+      "id": "5",
+      "status": "pending"
+    },
+    {
+      "content": "Empujar los cambios iniciales a la rama remota \"main\"",
+      "id": "6",
+      "status": "pending"
+    },
+    {
+      "content": "Verificar que todo se haya configurado correctamente",
+      "id": "7",
+      "status": "pending"
+    }
+  ],
+  "sessionId": "4a67b08e-de00-4566-bfb3-4148957d1b6f"
+}
