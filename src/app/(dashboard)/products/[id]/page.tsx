@@ -256,10 +256,7 @@ const ProductDetailPage = () => {
                         try {
                           setLoading(true);
                           const { data, error } = await supabase.functions.invoke('search-product-image', {
-                            body: { query: `${formData.name} ${formData.barcode || ''}` },
-                            headers: {
-                              Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`
-                            }
+                            body: { query: `${formData.name} ${formData.barcode || ''}` }
                           });
 
                           if (error) throw error;
