@@ -87,6 +87,16 @@ export const useAuthStore = create<AuthState>((set) => ({
         },
         loading: false
       });
+
+      // Log IP address
+      try {
+        await fetch('/api/auth/log-ip', {
+          method: 'POST',
+        });
+      } catch (logError) {
+        console.error('Failed to log IP:', logError);
+        // Don't block login if logging fails
+      }
     }
   },
 
