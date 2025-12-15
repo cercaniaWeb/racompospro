@@ -82,5 +82,17 @@ export const parseProductVoiceCommand = (text: string): Partial<Product> => {
       result.name = result.name.charAt(0).toUpperCase() + result.name.slice(1);
   }
 
+  // 7. Weighted Product (Sold by weight/bulk)
+  const isWeighted = 
+    lowerText.includes('peso') || 
+    lowerText.includes('granel') || 
+    lowerText.includes('kilo') || 
+    lowerText.includes('pesado');
+  
+  if (isWeighted) {
+    result.is_weighted = true;
+    result.measurement_unit = 'kg'; // Default to kg for weighted products
+  }
+
   return result;
 };

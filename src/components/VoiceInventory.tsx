@@ -26,7 +26,9 @@ export const VoiceInventory = () => {
         sku: '',
         barcode: '',
         min_stock: 5,
-        category: ''
+        category: '',
+        is_weighted: false,
+        measurement_unit: 'pz'
     });
 
     const [lastTranscriptProcessed, setLastTranscriptProcessed] = useState('');
@@ -67,7 +69,9 @@ export const VoiceInventory = () => {
                 barcode: form.barcode || undefined,
                 stock: Number(form.stock || 0),
                 is_active: true,
-                category: form.category || 'General' // Default category
+                category: form.category || 'General',
+                is_weighted: form.is_weighted || false,
+                measurement_unit: form.is_weighted ? 'kg' : 'pz'
             } as any);
 
             // Reset after success
@@ -81,7 +85,9 @@ export const VoiceInventory = () => {
                 sku: '',
                 barcode: '',
                 min_stock: 5,
-                category: ''
+                category: '',
+                is_weighted: false,
+                measurement_unit: 'pz'
             });
             alert('Producto guardado exitosamente');
         } catch (err) {
@@ -100,7 +106,9 @@ export const VoiceInventory = () => {
             sku: '',
             barcode: '',
             min_stock: 5,
-            category: ''
+            category: '',
+            is_weighted: false,
+            measurement_unit: 'pz'
         });
     };
 
@@ -162,6 +170,19 @@ export const VoiceInventory = () => {
                             className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:bg-gray-700 dark:border-gray-600"
                             placeholder="Ej. Papas Sabritas"
                         />
+                    </div>
+
+                    <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                         <input 
+                            type="checkbox"
+                            checked={form.is_weighted || false}
+                            onChange={(e) => setForm({...form, is_weighted: e.target.checked, measurement_unit: e.target.checked ? 'kg' : 'pz'})}
+                            className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                            id="weightedCheck"
+                         />
+                         <label htmlFor="weightedCheck" className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                            Se vende por peso (kg)
+                         </label>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -272,6 +293,7 @@ export const VoiceInventory = () => {
                             <li>"Precio [número]" para el precio venta.</li>
                             <li>"Costo [número]" para el costo de compra.</li>
                             <li>"Stock [número]" e inventario inicial.</li>
+                            <li>Di "por peso", "a granel", o "kilo" para activar peso.</li>
                         </ul>
                     </div>
                 </div>
