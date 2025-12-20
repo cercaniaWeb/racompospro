@@ -57,13 +57,16 @@ export const VoiceInventory = () => {
         let cleanValue = value.toLowerCase().trim();
         const commonPhrases = [
             "cuál es el nombre del producto", 
+            "alguna descripción del producto",
+            "di no para saltar",
+            "a qué categoría pertenece",
             "cuál es el precio de venta", 
             "cuál es el costo de compra",
-            "a qué categoría pertenece",
             "qué cantidad tienes en stock",
             "cuál es el stock mínimo",
             "tiene código de barras",
-            "se vende por peso"
+            "se vende por peso",
+            "controlar por lotes o caducidad"
         ];
         
         commonPhrases.forEach(phrase => {
