@@ -3,9 +3,9 @@ import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { useProductStore } from '@/store/productStore';
 import { Product } from '@/lib/supabase/types';
-import { Mic, MicOff, Save, RotateCcw, Check, AlertTriangle, Play, Pause, Package, Barcode, DollarSign, Tag, Scale } from 'lucide-react';
+import { Mic, MicOff, Save, RotateCcw, Check, AlertTriangle, Play, Pause, Package, Barcode, DollarSign, Tag, Scale, Image as ImageIcon, Sparkles } from 'lucide-react';
 
-type InteractionStep = 'IDLE' | 'NAME' | 'DESCRIPTION' | 'CATEGORY' | 'PRICE' | 'COST' | 'STOCK' | 'MIN_STOCK' | 'BARCODE' | 'WEIGHTED' | 'BATCH' | 'CONFIRM' | 'SUCCESS';
+type InteractionStep = 'IDLE' | 'NAME' | 'DESCRIPTION' | 'CATEGORY' | 'PRICE' | 'COST' | 'STOCK' | 'MIN_STOCK' | 'BARCODE' | 'WEIGHTED' | 'BATCH' | 'IMAGE_GEN' | 'CONFIRM' | 'SUCCESS';
 
 export const VoiceInventory = () => {
     const { 
@@ -34,6 +34,7 @@ export const VoiceInventory = () => {
         barcode: '',
         min_stock: 5,
         category: '',
+        image_url: '',
         is_weighted: false,
         is_batch_tracked: false,
         measurement_unit: 'pz'
@@ -66,7 +67,8 @@ export const VoiceInventory = () => {
             "cuál es el stock mínimo",
             "tiene código de barras",
             "se vende por peso",
-            "controlar por lotes o caducidad"
+            "controlar por lotes o caducidad",
+            "generar imagen automática"
         ];
         
         commonPhrases.forEach(phrase => {
@@ -83,6 +85,10 @@ export const VoiceInventory = () => {
                 resetTranscript();
                 startListening();
              });
+        };
+
+        const generatePlaceholderImage = (name: string) => {
+            return `https://placehold.co/400x400/e2e8f0/1e293b?text=${encodeURIComponent(name.substring(0, 20))}`;
         };
 
         switch (currentStep) {
@@ -185,8 +191,21 @@ export const VoiceInventory = () => {
                 } else {
                     setForm(prev => ({ ...prev, is_batch_tracked: false }));
                 }
-                setStep('CONFIRM');
-                speakNext(`Resumen: ${form.name},  ${form.price} pesos. ¿Guardar?`);
+                
+                setStep('IMAGE_GEN');
+                speakNext(`¿Generar imagen automática para el producto? Di Sí o No.`);
+                break;
+            case 'IMAGE_GEN':
+                if (cleanValue.includes('sí') || cleanValue.includes('si')) {
+                    const imgUrl = generatePlaceholderImage(form.name || 'Producto');
+                    setForm(prev => ({ ...prev, image_url: imgUrl }));
+                    setStep('CONFIRM');
+                    speakNext(`Resumen: ${form.name},  ${form.price} pesos. ¿Guardar?`);
+                } else {
+                     setForm(prev => ({ ...prev, image_url: '' }));
+                     setStep('CONFIRM');
+                     speakNext(`Resumen: ${form.name},  ${form.price} pesos. ¿Guardar?`);
+                }
                 break;
             case 'CONFIRM':
                 if (cleanValue.includes('sí') || cleanValue.includes('si') || cleanValue.includes('guardar') || cleanValue.includes('ok')) {
@@ -230,6 +249,7 @@ export const VoiceInventory = () => {
                 category: form.category || 'General',
                 is_weighted: form.is_weighted || false,
                 is_batch_tracked: form.is_batch_tracked || false,
+                image_url: form.image_url || undefined,
                 measurement_unit: form.is_weighted ? 'kg' : 'pz'
             };
 
@@ -241,7 +261,7 @@ export const VoiceInventory = () => {
             setStep('SUCCESS');
             
             // After success view, go back to IDLE after a few seconds or let them click
-            setTimeout(() => setStep('IDLE'), 4000);
+            setTimeout(() => setStep('IDLE'), 5000);
 
         } catch (err) {
             console.error(err);
@@ -264,6 +284,7 @@ export const VoiceInventory = () => {
             barcode: '',
             min_stock: 5,
             category: '',
+            image_url: '',
             is_weighted: false,
             is_batch_tracked: false,
             measurement_unit: 'pz'
@@ -273,116 +294,203 @@ export const VoiceInventory = () => {
     };
 
     // UI Helper to highlight active field
-    const Field = ({ label, value, active, icon: Icon }: { label: string, value: any, active: boolean, icon: any }) => (
-        <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${active ? 'border-blue-500 bg-blue-50 scale-105 shadow-md' : 'border-gray-100 bg-white opacity-60'}`}>
-            <div className="flex items-center gap-2 mb-1">
-                <Icon className={`w-4 h-4 ${active ? 'text-blue-600' : 'text-gray-400'}`} />
-                <span className={`text-xs font-bold uppercase tracking-wider ${active ? 'text-blue-800' : 'text-gray-400'}`}>{label}</span>
+    const Field = ({ label, value, active, icon: Icon, isImage = false }: { label: string, value: any, active: boolean, icon: any, isImage?: boolean }) => (
+        <div className={`p-4 rounded-xl border-2 transition-all duration-500 transform ${
+            active 
+                ? 'border-indigo-500 bg-indigo-50/90 scale-105 shadow-xl ring-2 ring-indigo-200 backdrop-blur-md' 
+                : 'border-white/20 bg-white/40 opacity-70 hover:opacity-100 hover:bg-white/60'
+        }`}>
+            <div className="flex items-center gap-2 mb-2">
+                <div className={`p-2 rounded-lg ${active ? 'bg-indigo-600' : 'bg-gray-200'}`}>
+                    <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-gray-500'}`} />
+                </div>
+                <span className={`text-xs font-bold uppercase tracking-wider ${active ? 'text-indigo-800' : 'text-gray-600'}`}>{label}</span>
             </div>
-            <div className={`text-lg font-medium truncate ${active ? 'text-gray-900' : 'text-gray-500'}`}>
-                {value || '-'}
+            <div className={`text-lg font-medium truncate ${active ? 'text-gray-900' : 'text-gray-700'}`}>
+                {isImage && value ? (
+                    <div className="flex items-center gap-2 text-indigo-600">
+                        <Check className="w-5 h-5" />
+                        <span className="text-sm">Imagen Generada</span>
+                    </div>
+                ) : (
+                    value || <span className="text-gray-400 italic text-sm">Esperando...</span>
+                )}
             </div>
         </div>
     );
 
     return (
-        <div className="p-6 max-w-6xl mx-auto space-y-8">
-            <div className="text-center space-y-4">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Inventario de Voz
-                </h2>
-                
-                {step === 'SUCCESS' && (
-                    <div className="bg-green-100 text-green-800 p-4 rounded-xl animate-bounce">
-                        ¡Producto Agregado Exitosamente!
-                    </div>
-                )}
-            </div>
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6 flex flex-col items-center">
+            
+            <div className="w-full max-w-6xl space-y-8">
+                {/* Header */}
+                <div className="text-center space-y-2 relative">
+                    <h2 className="text-4xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent transform hover:scale-105 transition-transform duration-300">
+                        Asistente de Inventario
+                    </h2>
+                    <p className="text-gray-500 font-medium">Registro de productos manos libres</p>
+                    
+                    {step === 'SUCCESS' && (
+                        <div className="absolute top-16 left-1/2 -translate-x-1/2 w-full max-w-md bg-green-500 text-white py-3 px-6 rounded-2xl shadow-lg animate-bounce flex items-center justify-center gap-2 font-bold z-10">
+                            <Check className="w-6 h-6" />
+                            ¡Producto Guardado Exitosamente!
+                        </div>
+                    )}
+                </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-                {/* Left Column: Voice Interaction */}
-                <div className="lg:col-span-1 space-y-6">
-                    <div className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700 h-full">
-                        {step === 'IDLE' || step === 'SUCCESS' ? (
-                            <button
-                                onClick={startInteraction}
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-xl font-bold shadow-lg transition-transform hover:scale-105 flex items-center gap-3 w-full justify-center"
-                            >
-                                <Play className="w-6 h-6" /> {step === 'SUCCESS' ? 'Nuevo Registro' : 'Iniciar'}
-                            </button>
-                        ) : (
-                            <div className="relative">
+                <div className="grid lg:grid-cols-12 gap-8 mt-12">
+                    {/* Left Column: Voice Interaction Hub */}
+                    <div className="lg:col-span-4 flex flex-col gap-6">
+                        <div className="flex-1 bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 p-8 flex flex-col items-center justify-center relative overflow-hidden group">
+                           {/* Decorative background blobs */}
+                           <div className={`absolute top-0 right-0 w-64 h-64 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob ${isListening ? 'animation-delay-2000' : ''}`}></div>
+                           <div className={`absolute bottom-0 left-0 w-64 h-64 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob ${isListening ? 'animation-delay-4000' : ''}`}></div>
+
+                            {step === 'IDLE' || step === 'SUCCESS' ? (
                                 <button
-                                    onClick={isListening ? stopListening : startListening}
+                                    onClick={startInteraction}
+                                    className="relative z-10 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-6 rounded-2xl text-xl font-bold shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+                                >
+                                    <Play className="w-8 h-8" />
+                                    {step === 'SUCCESS' ? 'Nuevo Registro' : 'Iniciar Conversación'}
+                                </button>
+                            ) : (
+                                <div className="relative z-10 flex flex-col items-center">
+                                    <button
+                                        onClick={isListening ? stopListening : startListening}
+                                        className={`
+                                            relative w-40 h-40 rounded-full flex items-center justify-center transition-all duration-500
+                                            ${isListening 
+                                                ? 'bg-red-500 shadow-[0_0_60px_-10px_rgba(239,68,68,0.5)] scale-110' 
+                                                : 'bg-indigo-600 shadow-xl'
+                                            }
+                                        `}
+                                    >
+                                        <div className={`absolute inset-0 rounded-full border-4 border-white opacity-20 ${isListening ? 'animate-ping' : ''}`}></div>
+                                        <Mic className={`w-16 h-16 text-white transition-transform ${isListening ? 'scale-110' : ''}`} />
+                                    </button>
+                                    
+                                    <div className="mt-8 text-center space-y-2">
+                                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gray-900 text-white text-sm font-medium">
+                                            {isListening ? (
+                                                <><span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Escuchando...</>
+                                            ) : (
+                                                <><span className="w-2 h-2 rounded-full bg-yellow-500"></span> Procesando...</>
+                                            )}
+                                        </div>
+                                        <p className="text-gray-400 text-xs uppercase tracking-widest font-bold">Estado</p>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            <div className="mt-8 w-full">
+                                 <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 min-h-[140px] flex flex-col justify-center text-center relative">
+                                        <div className="absolute top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Transcripción en vivo</div>
+                                        <p className="text-xl font-medium text-gray-800 leading-relaxed">
+                                            "{transcript || interimTranscript || <span className="text-gray-300">...</span>}"
+                                        </p>
+                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="grid grid-cols-2 gap-3">
+                             <button onClick={() => nextStep(step, transcript)} className="p-4 bg-white/60 hover:bg-white rounded-2xl text-gray-600 font-bold border border-white shadow-sm transition-all hover:shadow-md text-sm">
+                                ⏭️ Saltar Paso
+                             </button>
+                             <button onClick={() => handleClear(true)} className="p-4 bg-red-50/50 hover:bg-red-50 rounded-2xl text-red-600 font-bold border border-red-100 shadow-sm transition-all hover:shadow-md text-sm">
+                                🗑️ Cancelar
+                             </button>
+                        </div>
+                    </div>
+
+                    {/* Right Column: Live Data Visualization */}
+                    <div className="lg:col-span-8 flex flex-col gap-6">
+                        <div className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8 h-full">
+                            <div className="flex items-center gap-3 mb-8">
+                                <div className="p-3 bg-indigo-100 rounded-xl text-indigo-600">
+                                    <Sparkles className="w-6 h-6" />
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-800">
+                                    Datos del Producto
+                                </h3>
+                                <div className="ml-auto text-sm text-gray-500 font-medium">
+                                    Paso: <span className="text-indigo-600 font-bold">{step}</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                <Field icon={Tag} label="Nombre" value={form.name} active={step === 'NAME'} />
+                                <Field icon={Tag} label="Descripción" value={form.description} active={step === 'DESCRIPTION'} />
+                                <Field icon={Package} label="Categoría" value={form.category} active={step === 'CATEGORY'} />
+                                
+                                <Field icon={DollarSign} label="Precio Venta" value={`$${form.price}`} active={step === 'PRICE'} />
+                                <Field icon={DollarSign} label="Costo" value={`$${form.cost}`} active={step === 'COST'} />
+                                <Field icon={Package} label="Stock" value={form.stock} active={step === 'STOCK'} />
+                                
+                                <Field icon={AlertTriangle} label="Min Stock" value={form.min_stock} active={step === 'MIN_STOCK'} />
+                                <Field icon={Barcode} label="Código" value={form.barcode} active={step === 'BARCODE'} />
+                                <Field icon={Scale} label="Por Peso" value={form.is_weighted ? 'Sí' : 'No'} active={step === 'WEIGHTED'} />
+                                
+                                <Field icon={Package} label="Lotes" value={form.is_batch_tracked ? 'Sí' : 'No'} active={step === 'BATCH'} />
+                                <Field icon={ImageIcon} label="Imagen" value={form.image_url} active={step === 'IMAGE_GEN'} isImage />
+                                
+                                <button
+                                    onClick={handleSave}
                                     className={`
-                                        relative w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300
-                                        ${isListening 
-                                            ? 'bg-red-500 hover:bg-red-600 animate-pulse ring-8 ring-red-100' 
-                                            : 'bg-green-600 hover:bg-green-700 shadow-xl'
+                                        p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all duration-300
+                                        ${step === 'CONFIRM' 
+                                            ? 'border-green-500 bg-green-500 text-white shadow-lg scale-105 hover:bg-green-600' 
+                                            : 'border-dashed border-gray-300 text-gray-400 bg-gray-50 hover:bg-gray-100 hover:text-gray-600'
                                         }
                                     `}
                                 >
-                                    <Mic className="w-12 h-12 text-white" />
+                                    <Save className="w-6 h-6" />
+                                    <span className="font-bold uppercase tracking-wider text-xs">Confirmar</span>
                                 </button>
-                                <div className="absolute -bottom-16 w-max left-1/2 -translate-x-1/2 text-sm font-bold text-gray-500">
-                                    {isListening ? 'Escuchando...' : 'Procesando...'}
+                            </div>
+
+                            {/* Preview of Image if exists */}
+                            {form.image_url && (
+                                <div className="mt-8 p-4 bg-indigo-50 rounded-2xl flex items-center gap-4 animate-fade-in">
+                                    <img src={form.image_url} alt="Preview" className="w-16 h-16 rounded-xl object-cover shadow-md" />
+                                    <div>
+                                        <p className="text-sm font-bold text-indigo-900">Vista Previa Generada</p>
+                                        <p className="text-xs text-indigo-700 opacity-80">Esta imagen se asignará al producto.</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Last Saved Card */}
+                        {lastSavedProduct && step === 'SUCCESS' && (
+                            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-8 text-white shadow-2xl animate-fade-in-up transform transition-all hover:scale-[1.02]">
+                                <div className="flex items-start justify-between">
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2 opacity-90 text-sm font-bold uppercase tracking-wider">
+                                            <Check className="w-4 h-4" />
+                                            Guardado Recientemente
+                                        </div>
+                                        <h3 className="text-3xl font-black tracking-tight">{lastSavedProduct.name}</h3>
+                                        <div className="flex items-center gap-4 text-emerald-100 text-sm font-medium">
+                                            <span>{lastSavedProduct.category}</span>
+                                            <span>•</span>
+                                            <span>{lastSavedProduct.stock} unidades</span>
+                                            {lastSavedProduct.is_weighted && (
+                                                <>
+                                                    <span>•</span>
+                                                    <span className="flex items-center gap-1"><Scale className="w-3 h-3" /> Peso</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-4xl font-black">${lastSavedProduct.price}</p>
+                                        <p className="text-emerald-200 text-sm font-medium">Precio Venta</p>
+                                    </div>
                                 </div>
                             </div>
                         )}
-                        
-                        <div className="mt-20 w-full p-4 bg-gray-50 rounded-xl text-center min-h-[120px] flex flex-col justify-center border-2 border-dashed border-gray-200">
-                             <p className="text-gray-400 text-sm mb-2 uppercase tracking-widest font-bold">Transcripción</p>
-                             <p className="text-lg font-medium text-gray-800 italic">
-                                "{transcript || interimTranscript || '...'}"
-                             </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Column: Dynamic Form Visualization */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <Field icon={Tag} label="Producto" value={form.name} active={step === 'NAME'} />
-                        <Field icon={Tag} label="Descripción" value={form.description} active={step === 'DESCRIPTION'} />
-                        <Field icon={Package} label="Categoría" value={form.category} active={step === 'CATEGORY'} />
-                        <Field icon={DollarSign} label="Precio Venta" value={`$${form.price}`} active={step === 'PRICE'} />
-                        
-                        <Field icon={DollarSign} label="Costo Compra" value={`$${form.cost}`} active={step === 'COST'} />
-                        <Field icon={Package} label="Stock Actual" value={form.stock} active={step === 'STOCK'} />
-                        <Field icon={AlertTriangle} label="Min Stock" value={form.min_stock} active={step === 'MIN_STOCK'} />
-                        
-                        <Field icon={Barcode} label="Código Barras" value={form.barcode} active={step === 'BARCODE'} />
-                        <Field icon={Scale} label="Por Peso" value={form.is_weighted ? 'Sí' : 'No'} active={step === 'WEIGHTED'} />
-                        <Field icon={Package} label="Lotes/Caducidad" value={form.is_batch_tracked ? 'Sí' : 'No'} active={step === 'BATCH'} />
-                        <div className={`p-4 rounded-xl border-2 flex items-center justify-center ${step === 'CONFIRM' ? 'border-green-500 bg-green-50' : 'border-gray-100 opacity-60'}`}>
-                             <span className="font-bold text-green-700">CONFIRMAR</span>
-                        </div>
-                    </div>
-
-                    {/* Live Summary / Last Saved */}
-                    {lastSavedProduct && step === 'SUCCESS' && (
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white shadow-xl">
-                            <div className="flex items-start justify-between">
-                                <div>
-                                    <p className="opacity-80 text-sm font-medium mb-1">Último producto guardado</p>
-                                    <h3 className="text-2xl font-bold">{lastSavedProduct.name}</h3>
-                                    <p className="mt-1 opacity-90">{lastSavedProduct.category} • {lastSavedProduct.stock} unidades</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-3xl font-bold">${lastSavedProduct.price}</p>
-                                    <p className="opacity-80 text-sm">Margen: {Math.round((((Number(lastSavedProduct.price) || 0) - (Number(lastSavedProduct.cost) || 0)) / (Number(lastSavedProduct.cost) || 1)) * 100)}%</p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                 
-                    <div className="flex justify-end gap-3 mt-4">
-                        <button onClick={() => nextStep(step, transcript)} className="px-6 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 text-sm font-bold">
-                            Saltar / Forzar
-                        </button>
-                        <button onClick={() => handleClear(true)} className="px-6 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-bold">
-                            Cancelar Todo
-                        </button>
                     </div>
                 </div>
             </div>
