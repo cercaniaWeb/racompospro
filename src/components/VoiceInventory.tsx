@@ -295,43 +295,43 @@ export const VoiceInventory = () => {
 
     // UI Helper to highlight active field
     const Field = ({ label, value, active, icon: Icon, isImage = false }: { label: string, value: any, active: boolean, icon: any, isImage?: boolean }) => (
-        <div className={`p-4 rounded-xl border-2 transition-all duration-500 transform ${
+        <div className={`p-4 rounded-xl border transition-all duration-500 transform ${
             active 
-                ? 'border-indigo-500 bg-indigo-50/90 scale-105 shadow-xl ring-2 ring-indigo-200 backdrop-blur-md' 
-                : 'border-white/20 bg-white/40 opacity-70 hover:opacity-100 hover:bg-white/60'
+                ? 'border-primary bg-primary/20 scale-105 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.3)] ring-1 ring-primary/50 backdrop-blur-md' 
+                : 'glass border-white/5 opacity-70 hover:opacity-100'
         }`}>
             <div className="flex items-center gap-2 mb-2">
-                <div className={`p-2 rounded-lg ${active ? 'bg-indigo-600' : 'bg-gray-200'}`}>
-                    <Icon className={`w-4 h-4 ${active ? 'text-white' : 'text-gray-500'}`} />
+                <div className={`p-2 rounded-lg ${active ? 'bg-primary text-primary-foreground' : 'bg-white/10 text-gray-400'}`}>
+                    <Icon className="w-4 h-4" />
                 </div>
-                <span className={`text-xs font-bold uppercase tracking-wider ${active ? 'text-indigo-800' : 'text-gray-600'}`}>{label}</span>
+                <span className={`text-xs font-bold uppercase tracking-wider ${active ? 'text-primary-foreground' : 'text-gray-400'}`}>{label}</span>
             </div>
-            <div className={`text-lg font-medium truncate ${active ? 'text-gray-900' : 'text-gray-700'}`}>
+            <div className={`text-lg font-medium truncate ${active ? 'text-white' : 'text-gray-300'}`}>
                 {isImage && value ? (
-                    <div className="flex items-center gap-2 text-indigo-600">
+                    <div className="flex items-center gap-2 text-primary">
                         <Check className="w-5 h-5" />
-                        <span className="text-sm">Imagen Generada</span>
+                        <span className="text-sm text-primary-foreground">Imagen Generada</span>
                     </div>
                 ) : (
-                    value || <span className="text-gray-400 italic text-sm">Esperando...</span>
+                    value || <span className="text-gray-600 italic text-sm">Esperando...</span>
                 )}
             </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6 flex flex-col items-center">
+        <div className="min-h-[calc(100vh-4rem)] p-6 flex flex-col items-center">
             
             <div className="w-full max-w-6xl space-y-8">
                 {/* Header */}
                 <div className="text-center space-y-2 relative">
-                    <h2 className="text-4xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent transform hover:scale-105 transition-transform duration-300">
+                    <h2 className="text-5xl font-black text-gradient transform hover:scale-105 transition-transform duration-300 tracking-tight">
                         Asistente de Inventario
                     </h2>
-                    <p className="text-gray-500 font-medium">Registro de productos manos libres</p>
+                    <p className="text-gray-400 font-medium">Registro de productos manos libres</p>
                     
                     {step === 'SUCCESS' && (
-                        <div className="absolute top-16 left-1/2 -translate-x-1/2 w-full max-w-md bg-green-500 text-white py-3 px-6 rounded-2xl shadow-lg animate-bounce flex items-center justify-center gap-2 font-bold z-10">
+                        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-md bg-green-500/20 border border-green-500/50 text-green-300 py-3 px-6 rounded-2xl shadow-[0_0_30px_rgba(34,197,94,0.3)] animate-bounce flex items-center justify-center gap-2 font-bold z-10 backdrop-blur-md">
                             <Check className="w-6 h-6" />
                             ¡Producto Guardado Exitosamente!
                         </div>
@@ -341,18 +341,18 @@ export const VoiceInventory = () => {
                 <div className="grid lg:grid-cols-12 gap-8 mt-12">
                     {/* Left Column: Voice Interaction Hub */}
                     <div className="lg:col-span-4 flex flex-col gap-6">
-                        <div className="flex-1 bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 p-8 flex flex-col items-center justify-center relative overflow-hidden group">
+                        <div className="flex-1 glass rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden group">
                            {/* Decorative background blobs */}
-                           <div className={`absolute top-0 right-0 w-64 h-64 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob ${isListening ? 'animation-delay-2000' : ''}`}></div>
-                           <div className={`absolute bottom-0 left-0 w-64 h-64 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob ${isListening ? 'animation-delay-4000' : ''}`}></div>
+                           <div className={`absolute top-0 right-0 w-64 h-64 bg-primary/30 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob ${isListening ? 'animation-delay-2000' : ''}`}></div>
+                           <div className={`absolute bottom-0 left-0 w-64 h-64 bg-purple-500/30 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob ${isListening ? 'animation-delay-4000' : ''}`}></div>
 
                             {step === 'IDLE' || step === 'SUCCESS' ? (
                                 <button
                                     onClick={startInteraction}
-                                    className="relative z-10 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-6 rounded-2xl text-xl font-bold shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
+                                    className="relative z-10 w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 rounded-2xl text-xl font-bold shadow-[0_0_40px_-10px_hsl(var(--primary)/0.5)] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-3"
                                 >
-                                    <Play className="w-8 h-8" />
-                                    {step === 'SUCCESS' ? 'Nuevo Registro' : 'Iniciar Conversación'}
+                                    <Play className="w-8 h-8 fill-current" />
+                                    {step === 'SUCCESS' ? 'Nuevo Registro' : 'Iniciar'}
                                 </button>
                             ) : (
                                 <div className="relative z-10 flex flex-col items-center">
@@ -361,33 +361,32 @@ export const VoiceInventory = () => {
                                         className={`
                                             relative w-40 h-40 rounded-full flex items-center justify-center transition-all duration-500
                                             ${isListening 
-                                                ? 'bg-red-500 shadow-[0_0_60px_-10px_rgba(239,68,68,0.5)] scale-110' 
-                                                : 'bg-indigo-600 shadow-xl'
+                                                ? 'bg-destructive shadow-[0_0_60px_-10px_rgba(239,68,68,0.5)] scale-110' 
+                                                : 'bg-primary shadow-[0_0_40px_-10px_hsl(var(--primary)/0.5)]'
                                             }
                                         `}
                                     >
-                                        <div className={`absolute inset-0 rounded-full border-4 border-white opacity-20 ${isListening ? 'animate-ping' : ''}`}></div>
+                                        <div className={`absolute inset-0 rounded-full border-4 border-white/20 ${isListening ? 'animate-ping' : ''}`}></div>
                                         <Mic className={`w-16 h-16 text-white transition-transform ${isListening ? 'scale-110' : ''}`} />
                                     </button>
                                     
                                     <div className="mt-8 text-center space-y-2">
-                                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gray-900 text-white text-sm font-medium">
+                                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/50 border border-white/10 text-white text-sm font-medium backdrop-blur-sm">
                                             {isListening ? (
-                                                <><span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Escuchando...</>
+                                                <><span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_red]"></span> Escuchando...</>
                                             ) : (
-                                                <><span className="w-2 h-2 rounded-full bg-yellow-500"></span> Procesando...</>
+                                                <><span className="w-2 h-2 rounded-full bg-yellow-500 shadow-[0_0_10px_orange]"></span> Procesando...</>
                                             )}
                                         </div>
-                                        <p className="text-gray-400 text-xs uppercase tracking-widest font-bold">Estado</p>
                                     </div>
                                 </div>
                             )}
                             
                             <div className="mt-8 w-full">
-                                 <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100 min-h-[140px] flex flex-col justify-center text-center relative">
-                                        <div className="absolute top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Transcripción en vivo</div>
-                                        <p className="text-xl font-medium text-gray-800 leading-relaxed">
-                                            "{transcript || interimTranscript || <span className="text-gray-300">...</span>}"
+                                 <div className="bg-black/20 rounded-2xl p-6 border border-white/5 min-h-[140px] flex flex-col justify-center text-center relative backdrop-blur-sm">
+                                        <div className="absolute top-3 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Transcripción</div>
+                                        <p className="text-xl font-medium text-gray-200 leading-relaxed">
+                                            "{transcript || interimTranscript || <span className="text-gray-700">...</span>}"
                                         </p>
                                  </div>
                             </div>
@@ -395,27 +394,27 @@ export const VoiceInventory = () => {
 
                         {/* Quick Actions */}
                         <div className="grid grid-cols-2 gap-3">
-                             <button onClick={() => nextStep(step, transcript)} className="p-4 bg-white/60 hover:bg-white rounded-2xl text-gray-600 font-bold border border-white shadow-sm transition-all hover:shadow-md text-sm">
-                                ⏭️ Saltar Paso
+                             <button onClick={() => nextStep(step, transcript)} className="p-4 glass glass-hover rounded-2xl text-gray-300 font-bold text-sm flex items-center justify-center gap-2">
+                                <span>⏭️</span> Saltar
                              </button>
-                             <button onClick={() => handleClear(true)} className="p-4 bg-red-50/50 hover:bg-red-50 rounded-2xl text-red-600 font-bold border border-red-100 shadow-sm transition-all hover:shadow-md text-sm">
-                                🗑️ Cancelar
+                             <button onClick={() => handleClear(true)} className="p-4 bg-destructive/10 hover:bg-destructive/20 border border-destructive/20 rounded-2xl text-destructive font-bold text-sm transition-all flex items-center justify-center gap-2">
+                                <span>🗑️</span> Cancelar
                              </button>
                         </div>
                     </div>
 
                     {/* Right Column: Live Data Visualization */}
                     <div className="lg:col-span-8 flex flex-col gap-6">
-                        <div className="bg-white/60 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8 h-full">
+                        <div className="glass rounded-3xl p-8 h-full relative overflow-hidden">
                             <div className="flex items-center gap-3 mb-8">
-                                <div className="p-3 bg-indigo-100 rounded-xl text-indigo-600">
+                                <div className="p-3 bg-primary/20 rounded-xl text-primary border border-primary/20">
                                     <Sparkles className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-800">
+                                <h3 className="text-xl font-bold text-white">
                                     Datos del Producto
                                 </h3>
-                                <div className="ml-auto text-sm text-gray-500 font-medium">
-                                    Paso: <span className="text-indigo-600 font-bold">{step}</span>
+                                <div className="ml-auto text-sm text-gray-400 font-medium">
+                                    Paso: <span className="text-primary font-bold">{step}</span>
                                 </div>
                             </div>
 
@@ -440,8 +439,8 @@ export const VoiceInventory = () => {
                                     className={`
                                         p-4 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all duration-300
                                         ${step === 'CONFIRM' 
-                                            ? 'border-green-500 bg-green-500 text-white shadow-lg scale-105 hover:bg-green-600' 
-                                            : 'border-dashed border-gray-300 text-gray-400 bg-gray-50 hover:bg-gray-100 hover:text-gray-600'
+                                            ? 'border-green-500 bg-green-500 text-white shadow-[0_0_30px_rgba(34,197,94,0.4)] scale-105 hover:bg-green-600' 
+                                            : 'border-dashed border-white/10 text-gray-500 bg-white/5 hover:bg-white/10 hover:text-gray-300'
                                         }
                                     `}
                                 >
@@ -452,11 +451,11 @@ export const VoiceInventory = () => {
 
                             {/* Preview of Image if exists */}
                             {form.image_url && (
-                                <div className="mt-8 p-4 bg-indigo-50 rounded-2xl flex items-center gap-4 animate-fade-in">
-                                    <img src={form.image_url} alt="Preview" className="w-16 h-16 rounded-xl object-cover shadow-md" />
+                                <div className="mt-8 p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center gap-4 animate-fade-in backdrop-blur-sm">
+                                    <img src={form.image_url} alt="Preview" className="w-16 h-16 rounded-xl object-cover shadow-lg" />
                                     <div>
-                                        <p className="text-sm font-bold text-indigo-900">Vista Previa Generada</p>
-                                        <p className="text-xs text-indigo-700 opacity-80">Esta imagen se asignará al producto.</p>
+                                        <p className="text-sm font-bold text-primary">Vista Previa Generada</p>
+                                        <p className="text-xs text-gray-400 opacity-80">Esta imagen se asignará al producto.</p>
                                     </div>
                                 </div>
                             )}
@@ -464,10 +463,10 @@ export const VoiceInventory = () => {
 
                         {/* Last Saved Card */}
                         {lastSavedProduct && step === 'SUCCESS' && (
-                            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-8 text-white shadow-2xl animate-fade-in-up transform transition-all hover:scale-[1.02]">
+                            <div className="bg-gradient-to-r from-emerald-600/90 to-teal-800/90 border border-emerald-500/30 rounded-3xl p-8 text-white shadow-2xl animate-fade-in-up transform transition-all hover:scale-[1.02] backdrop-blur-xl">
                                 <div className="flex items-start justify-between">
                                     <div className="space-y-2">
-                                        <div className="flex items-center gap-2 opacity-90 text-sm font-bold uppercase tracking-wider">
+                                        <div className="flex items-center gap-2 opacity-90 text-sm font-bold uppercase tracking-wider text-emerald-300">
                                             <Check className="w-4 h-4" />
                                             Guardado Recientemente
                                         </div>
@@ -485,8 +484,8 @@ export const VoiceInventory = () => {
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-4xl font-black">${lastSavedProduct.price}</p>
-                                        <p className="text-emerald-200 text-sm font-medium">Precio Venta</p>
+                                        <p className="text-4xl font-black text-emerald-300">${lastSavedProduct.price}</p>
+                                        <p className="text-emerald-200/60 text-sm font-medium">Precio Venta</p>
                                     </div>
                                 </div>
                             </div>
