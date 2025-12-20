@@ -48,8 +48,11 @@ export const VoiceInventory = () => {
         setLastSavedProduct(null);
         stopListening();
         speak("¿Cuál es el nombre del producto?", () => {
-            resetTranscript();
-            startListening();
+            // Safety delay to prevent self-hearing the question
+            setTimeout(() => {
+                resetTranscript();
+                startListening();
+            }, 1000);
         });
     };
 
@@ -86,7 +89,7 @@ export const VoiceInventory = () => {
                 setTimeout(() => {
                     resetTranscript();
                     startListening();
-                }, 800);
+                }, 1000);
              });
         };
 
