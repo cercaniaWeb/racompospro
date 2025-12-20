@@ -24,10 +24,14 @@ const ProductsPage = () => {
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
+    cost: '',
     stock: '',
+    min_stock: '',
     category: '',
     barcode: '',
-    sku: ''
+    sku: '',
+    description: '',
+    is_weighted: false
   });
 
   const { modalRef, handleBackdropClick } = useModal({
@@ -108,20 +112,20 @@ const ProductsPage = () => {
         name: newProduct.name,
         price: parseFloat(newProduct.price),
         selling_price: parseFloat(newProduct.price),
-        cost: 0,
+        cost: parseFloat(newProduct.cost) || 0,
         stock: parseInt(newProduct.stock) || 0,
         category: newProduct.category || 'General',
         barcode: newProduct.barcode,
         sku: newProduct.sku,
-        description: '',
-        min_stock: 5,
+        description: newProduct.description || '',
+        min_stock: parseInt(newProduct.min_stock) || 5,
         image_url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c', // Placeholder
         is_active: true,
-        is_weighted: false,
-        measurement_unit: 'unit'
+        is_weighted: newProduct.is_weighted,
+        measurement_unit: newProduct.is_weighted ? 'kg' : 'unit'
       });
       setShowAddProductModal(false);
-      setNewProduct({ name: '', price: '', stock: '', category: '', barcode: '', sku: '' });
+      setNewProduct({ name: '', price: '', cost: '', stock: '', min_stock: '', category: '', barcode: '', sku: '', description: '', is_weighted: false });
 
       // Refresh inventory to show the new product
       if (currentStoreId) {
@@ -191,6 +195,12 @@ const ProductsPage = () => {
                 required
               />
               <InputField
+                label="SKU"
+                value={newProduct.sku}
+                onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })}
+                placeholder="Opcional"
+              />
+              <InputField
                 label="Precio"
                 type="number"
                 value={newProduct.price}
@@ -199,11 +209,25 @@ const ProductsPage = () => {
                 required
               />
               <InputField
+                label="Costo"
+                type="number"
+                value={newProduct.cost}
+                onChange={(e) => setNewProduct({ ...newProduct, cost: e.target.value })}
+                placeholder="0.00"
+              />
+              <InputField
                 label="Stock Inicial"
                 type="number"
                 value={newProduct.stock}
                 onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
                 placeholder="0"
+              />
+              <InputField
+                label="Stock Mínimo"
+                type="number"
+                value={newProduct.min_stock}
+                onChange={(e) => setNewProduct({ ...newProduct, min_stock: e.target.value })}
+                placeholder="5"
               />
               <InputField
                 label="Categoría"
@@ -217,12 +241,30 @@ const ProductsPage = () => {
                 onChange={(e) => setNewProduct({ ...newProduct, barcode: e.target.value })}
                 placeholder="Escanea o escribe..."
               />
-              <InputField
-                label="SKU"
-                value={newProduct.sku}
-                onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })}
-                placeholder="Opcional"
-              />
+              <div className="md:col-span-2 bg-gray-800/5 border border-gray-200 dark:bg-gray-800/30 dark:border-gray-700 rounded-lg p-4">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                          type="checkbox"
+                          checked={newProduct.is_weighted}
+                          onChange={(e) => setNewProduct({ ...newProduct, is_weighted: e.target.checked })}
+                          className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-blue-500 focus:ring-2 focus:ring-blue-500"
+                      />
+                      <div>
+                          <span className="text-gray-900 dark:text-white font-medium">Producto por peso</span>
+                          <p className="text-gray-500 dark:text-gray-400 text-sm">
+                              El producto se venderá por kilogramo (kg) en lugar de por unidad
+                          </p>
+                      </div>
+                  </label>
+              </div>
+              <div className="md:col-span-2">
+                  <InputField
+                      label="Descripción"
+                      value={newProduct.description}
+                      onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                      placeholder="Descripción del producto"
+                  />
+              </div>
             </div>
 
             <div className="flex justify-end space-x-2 mt-6">

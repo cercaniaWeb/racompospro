@@ -16,7 +16,7 @@ export const useProduct = () => {
     loading,
     error,
     fetchProducts,
-    addProduct: (productData: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => addProduct(productData),
+    addProduct: (productData: Omit<Product, 'id' | 'created_at' | 'updated_at'>, storeId?: string) => addProduct(productData, storeId),
     updateProduct: (id: string, updates: Partial<Product>) => updateProduct(id, updates),
     deleteProduct: (id: string) => deleteProduct(id),
     setError

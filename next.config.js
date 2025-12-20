@@ -17,6 +17,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        // Allow images from HTTP source (some legacy stores)
+        protocol: 'http',
+        hostname: '**',
+      },
     ],
   },
 }

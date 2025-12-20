@@ -7,10 +7,12 @@ import { useProduct } from '@/hooks/useProduct';
 
 import { useModal } from '@/hooks/useModal';
 import RoleGuard from '@/components/auth/RoleGuard';
-import { Globe, Plus, Edit, Trash2, Package } from 'lucide-react';
+import { Globe, Plus, Edit, Trash2, Package, Store } from 'lucide-react';
+import { useStores } from '@/hooks/useStores';
 
 const MasterCatalogPage = () => {
     const { products, loading, error, addProduct, updateProduct, deleteProduct } = useProduct();
+    const { stores } = useStores();
     const [showAddProductModal, setShowAddProductModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [newProduct, setNewProduct] = useState({
@@ -22,10 +24,15 @@ const MasterCatalogPage = () => {
         sku: '',
         description: '',
         measurement_unit: 'unit',
-        is_weighted: false
+        is_weighted: false,
+        stock: '',
+        min_stock: '',
+        is_batch_tracked: false,
+        image_url: ''
     });
 
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [selectedStoreId, setSelectedStoreId] = useState<string>('');
 
     const { modalRef, handleBackdropClick } = useModal({
         onClose: () => {
@@ -47,7 +54,11 @@ const MasterCatalogPage = () => {
             sku: '',
             description: '',
             measurement_unit: 'unit',
-            is_weighted: false
+            is_weighted: false,
+            stock: '',
+            min_stock: '',
+            is_batch_tracked: false,
+            image_url: ''
         });
     };
 
@@ -62,7 +73,11 @@ const MasterCatalogPage = () => {
             sku: product.sku || '',
             description: product.description || '',
             measurement_unit: product.measurement_unit || 'unit',
-            is_weighted: product.is_weighted || false
+            is_weighted: product.is_weighted || false,
+            stock: (product.store_stock ?? product.stock ?? 0).toString(),
+            min_stock: (product.min_stock ?? 0).toString(),
+            is_batch_tracked: product.is_batch_tracked || false,
+            image_url: product.image_url || ''
         });
         setShowAddProductModal(true);
     };
@@ -78,9 +93,11 @@ const MasterCatalogPage = () => {
                 cost: parseFloat(newProduct.cost) || 0,
                 sku: newProduct.sku,
                 barcode: newProduct.barcode || undefined,
-                min_stock: 0,
-                image_url: '',
+                min_stock: parseInt(newProduct.min_stock) || 0,
+                stock: parseInt(newProduct.stock) || 0,
+                image_url: newProduct.image_url || '',
                 is_weighted: newProduct.is_weighted,
+                is_batch_tracked: newProduct.is_batch_tracked,
                 category: newProduct.category
             };
 
@@ -88,7 +105,7 @@ const MasterCatalogPage = () => {
                 await updateProduct(editingId, productData);
                 alert('Producto actualizado correctamente');
             } else {
-                await addProduct(productData);
+                await addProduct(productData, selectedStoreId || undefined);
                 alert('Producto creado correctamente');
             }
 
@@ -262,22 +279,30 @@ const MasterCatalogPage = () => {
                         </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* 1. Nombre del Producto */}
+                            <div className="md:col-span-2">
+                                <InputField
+                                    label="Nombre del Producto *"
+                                    value={newProduct.name}
+                                    onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                                    placeholder="Ej. Coca Cola 600ml"
+                                    required
+                                />
+                            </div>
+
+                            {/* 2. Descripción */}
+                            <div className="md:col-span-2">
+                                <InputField
+                                    label="Descripción"
+                                    value={newProduct.description}
+                                    onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                                    placeholder="Descripción del producto"
+                                />
+                            </div>
+
+                            {/* 3. Precio de Venta */}
                             <InputField
-                                label="Nombre del Producto *"
-                                value={newProduct.name}
-                                onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                                placeholder="Ej. Coca Cola 600ml"
-                                required
-                            />
-                            <InputField
-                                label="SKU *"
-                                value={newProduct.sku}
-                                onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })}
-                                placeholder="Código único"
-                                required
-                            />
-                            <InputField
-                                label="Precio de Venta Global *"
+                                label="Precio de Venta *"
                                 type="number"
                                 step="0.01"
                                 value={newProduct.selling_price}
@@ -285,26 +310,87 @@ const MasterCatalogPage = () => {
                                 placeholder="0.00"
                                 required
                             />
+
+                            {/* 4. Costo */}
                             <InputField
-                                label="Costo Global"
+                                label="Costo *"
                                 type="number"
                                 step="0.01"
                                 value={newProduct.cost}
                                 onChange={(e) => setNewProduct({ ...newProduct, cost: e.target.value })}
                                 placeholder="0.00"
                             />
+
+                            {/* 5. SKU */}
                             <InputField
-                                label="Código de Barras"
+                                label="SKU *"
+                                value={newProduct.sku}
+                                onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })}
+                                placeholder="Código SKU único"
+                                required
+                            />
+
+                            {/* 6. Código de Barras */}
+                            <InputField
+                                label="Código de Barras *"
                                 value={newProduct.barcode}
                                 onChange={(e) => setNewProduct({ ...newProduct, barcode: e.target.value })}
-                                placeholder="Opcional"
+                                placeholder="Código de barras UPC/EAN"
                             />
+
+                            {/* 7. Categoría */}
+                            <div className="md:col-span-2">
+                                <InputField
+                                    label="Categoría *"
+                                    value={newProduct.category}
+                                    onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                                    placeholder="Categoría del producto"
+                                />
+                            </div>
+
+                            {/* 8. Stock Inicial */}
+                            <div>
+                                <InputField
+                                    label="Stock Inicial *"
+                                    type="number"
+                                    value={newProduct.stock}
+                                    onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
+                                    placeholder="0"
+                                />
+                                {parseInt(newProduct.stock) > 0 && (
+                                    <div className="mt-3">
+                                        <label className="block text-sm font-medium text-gray-400 mb-1">
+                                            Tienda Destino del Stock
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                value={selectedStoreId}
+                                                onChange={(e) => setSelectedStoreId(e.target.value)}
+                                                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg p-3 appearance-none focus:ring-2 focus:ring-blue-500 outline-none"
+                                            >
+                                                <option value="">-- Selecciona una tienda --</option>
+                                                {stores.map(store => (
+                                                    <option key={store.id} value={store.id}>
+                                                        {store.name} ({store.type === 'central' ? 'Central' : 'Sucursal'})
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <Store className="absolute right-3 top-3.5 text-gray-500 pointer-events-none" size={18} />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* 9. Stock Mínimo */}
                             <InputField
-                                label="Categoría"
-                                value={newProduct.category}
-                                onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                                placeholder="Ej. Bebidas"
+                                label="Stock Mínimo *"
+                                type="number"
+                                value={newProduct.min_stock}
+                                onChange={(e) => setNewProduct({ ...newProduct, min_stock: e.target.value })}
+                                placeholder="0"
                             />
+
+                            {/* 10. Venta a Granel / Por Peso (Weighted) */}
                             <div className="md:col-span-2 bg-gray-800/30 border border-gray-700 rounded-lg p-4">
                                 <label className="flex items-center gap-3 cursor-pointer">
                                     <input
@@ -314,20 +400,62 @@ const MasterCatalogPage = () => {
                                         className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-2 focus:ring-blue-500"
                                     />
                                     <div>
-                                        <span className="text-white font-medium">Producto por peso</span>
+                                        <span className="text-white font-medium">Venta a Granel / Por Peso</span>
                                         <p className="text-gray-400 text-sm">
-                                            El producto se venderá por kilogramo (kg) en lugar de por unidad
+                                            Habilitar para usar con la báscula (Kg)
                                         </p>
                                     </div>
                                 </label>
                             </div>
+
+                            {/* 11. Controlar por Lotes / Caducidad */}
+                             <div className="md:col-span-2 bg-gray-800/30 border border-gray-700 rounded-lg p-4">
+                                <label className="flex items-center gap-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={newProduct.is_batch_tracked}
+                                        onChange={(e) => setNewProduct({ ...newProduct, is_batch_tracked: e.target.checked })}
+                                        className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <div>
+                                        <span className="text-white font-medium">Controlar por Lotes / Caducidad</span>
+                                        <p className="text-gray-400 text-sm">
+                                            Habilitar para productos perecederos
+                                        </p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            {/* 12. Imagen del Producto */}
                             <div className="md:col-span-2">
-                                <InputField
-                                    label="Descripción"
-                                    value={newProduct.description}
-                                    onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                                    placeholder="Descripción del producto"
-                                />
+                                <label className="block text-sm font-medium text-gray-300 mb-1">Imagen del Producto</label>
+                                <div className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center hover:border-blue-500 transition-colors">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center mb-2 overflow-hidden">
+                                            {newProduct.image_url ? (
+                                                <img src={newProduct.image_url} alt="Preview" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <span className="text-xs text-gray-500">Sin imagen</span>
+                                            )}
+                                        </div>
+                                        <p className="text-sm text-gray-400">
+                                            <span className="text-blue-400 font-medium hover:underline cursor-pointer">Seleccionar archivo</span> o arrastrar y soltar
+                                        </p>
+                                        <p className="text-xs text-gray-600">PNG, JPG, GIF hasta 10MB</p>
+                                    </div>
+                                </div>
+                                <div className="mt-3 flex justify-end">
+                                    <button
+                                        onClick={(e) => {
+                                             e.preventDefault();
+                                             // Random unsplash image for demo
+                                             setNewProduct(prev => ({...prev, image_url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}));
+                                        }}
+                                        className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                                    >
+                                        ✨ Auto-generar Imagen
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -346,7 +474,6 @@ const MasterCatalogPage = () => {
                     </div>
                 </div>
             )}
-
         </RoleGuard>
     );
 };

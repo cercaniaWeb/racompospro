@@ -7,7 +7,7 @@ interface ProductState {
   loading: boolean;
   error: string | null;
   fetchProducts: () => Promise<void>;
-  addProduct: (product: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  addProduct: (product: Omit<Product, 'id' | 'created_at' | 'updated_at'>, storeId?: string) => Promise<void>;
   updateProduct: (id: string, updates: Partial<Product>) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
   setError: (error: string | null) => void;
@@ -37,7 +37,7 @@ export const useProductStore = create<ProductState>((set) => ({
     }
   },
 
-  addProduct: async (productData) => {
+  addProduct: async (productData, targetStoreId) => {
     set({ loading: true, error: null });
 
     try {
@@ -61,8 +61,8 @@ export const useProductStore = create<ProductState>((set) => ({
 
       if (error) throw error;
 
-      // 2. Crear inventario para la sucursal actual
-      const storeId = localStorage.getItem('current_store_id');
+      // 2. Crear inventario para la sucursal actual o la seleccionada
+      const storeId = targetStoreId || localStorage.getItem('current_store_id');
 
       if (storeId && data) {
         const { error: invError } = await supabase
