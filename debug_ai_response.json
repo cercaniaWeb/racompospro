@@ -1,1 +1,0 @@
-{"error":"Failed to store suggestions","details":"null value in column \"suggested_quantity\" of relation \"reorder_suggestions\" violates not-null constraint"}
