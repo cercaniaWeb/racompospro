@@ -59,10 +59,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 e.stopPropagation();
                 onEdit();
               }}
-              className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-sm transition-colors z-20"
+              className="absolute top-2 right-2 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-sm transition-colors z-20"
               title="Editar precio"
+              aria-label={`Editar precio de ${name}`}
             >
-              <Edit size={16} />
+              <Edit size={20} />
             </button>
           )}
         </div>
@@ -79,10 +80,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 e.stopPropagation();
                 onEdit();
               }}
-              className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-sm transition-colors z-20"
+              className="absolute top-2 right-2 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-sm transition-colors z-20"
               title="Editar precio"
+              aria-label={`Editar precio de ${name}`}
             >
-              <Edit size={16} />
+              <Edit size={20} />
             </button>
           )}
         </div>
@@ -119,9 +121,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {onAddToCart && (
           <Button
-            className="mt-auto w-full group-hover:shadow-[0_0_20px_rgba(var(--primary),0.4)]"
+            className="mt-auto w-full group-hover:shadow-[0_0_20px_rgba(var(--primary),0.4)] min-h-[48px]"
             onClick={onAddToCart}
             variant="primary"
+            aria-label={`Añadir ${name} al carrito`}
           >
             Añadir al carrito
           </Button>

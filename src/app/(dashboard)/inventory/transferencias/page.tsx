@@ -168,7 +168,7 @@ const TransferenciasPage = () => {
                     <ArrowLeftRight className="h-12 w-12 text-gray-600 mx-auto mb-4" />
                     <p className="text-gray-400 font-medium">No hay transferencias registradas.</p>
                     <p className="text-gray-500 text-sm mt-1">
-                      Haz clic en "Nueva Transferencia" para crear una
+                      Haz clic en &quot;Nueva Transferencia&quot; para crear una
                     </p>
                   </td>
                 </tr>

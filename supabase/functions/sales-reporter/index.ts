@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3?target=deno";
+import { aiFetch } from "../shared/utils.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -55,7 +56,7 @@ serve(async (req) => {
         ${schemaContext}
         `;
 
-        const sqlResponse = await fetch(
+        const sqlResponse = await aiFetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiApiKey}`,
             {
                 method: 'POST',
@@ -118,7 +119,7 @@ serve(async (req) => {
         5. Format numbers as currency if they look like money.
         `;
 
-        const summaryResponse = await fetch(
+        const summaryResponse = await aiFetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiApiKey}`,
             {
                 method: 'POST',

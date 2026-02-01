@@ -4,6 +4,7 @@ import SearchBar from '@/components/molecules/SearchBar';
 import DataTable from '@/components/molecules/DataTable';
 import { Edit } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Skeleton from '@/components/atoms/Skeleton';
 
 interface Product {
   id: string;
@@ -22,18 +23,39 @@ interface ProductListProps {
   onSearch: (query: string) => void;
   onAddToCart?: (product: Product) => void;
   viewMode?: 'grid' | 'table';
+  loading?: boolean;
 }
 
 const ProductList: React.FC<ProductListProps> = ({
   products,
   onSearch,
   onAddToCart,
-  viewMode = 'grid'
+  viewMode = 'grid',
+  loading = false
 }) => {
   const router = useRouter();
 
   if (viewMode === 'table') {
     // ... (table view logic)
+  }
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="glass rounded-2xl p-5 h-[380px] space-y-4">
+            <Skeleton variant="rectangular" height={192} className="w-full" />
+            <div className="space-y-2">
+              <Skeleton variant="text" width="60%" />
+              <Skeleton variant="text" width="40%" />
+            </div>
+            <div className="mt-auto">
+              <Skeleton variant="rectangular" height={40} className="w-full" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   // Grid view

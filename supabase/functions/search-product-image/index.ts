@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { aiFetch } from "../shared/utils.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -30,7 +31,7 @@ Deno.serve(async (req: Request) => {
             // Real Search
             const searchUrl = `https://www.googleapis.com/customsearch/v1?q=${encodeURIComponent(query)}&cx=${GOOGLE_CX}&key=${GOOGLE_API_KEY}&searchType=image&num=1&safe=active`
 
-            const response = await fetch(searchUrl)
+            const response = await aiFetch(searchUrl, { method: 'GET' })
             data = await response.json()
             console.log('Google API Response:', JSON.stringify(data))
 

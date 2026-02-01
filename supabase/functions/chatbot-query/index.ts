@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { aiFetch } from '../shared/utils.ts';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -59,7 +60,7 @@ Return ONLY the SQL query without explanation.`;
         // Try Gemini first (free tier available)
         if (geminiApiKey && !sqlQuery) {
             try {
-                const geminiResponse = await fetch(
+                const geminiResponse = await aiFetch(
                     `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`,
                     {
                         method: 'POST',
@@ -91,7 +92,7 @@ Return ONLY the SQL query without explanation.`;
         // Try DeepSeek (very cheap)
         if (deepseekApiKey && !sqlQuery) {
             try {
-                const deepseekResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                const deepseekResponse = await aiFetch('https://api.deepseek.com/v1/chat/completions', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${deepseekApiKey}`,
@@ -120,7 +121,7 @@ Return ONLY the SQL query without explanation.`;
         // Fallback to OpenAI
         if (openaiApiKey && !sqlQuery) {
             try {
-                const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+                const openaiResponse = await aiFetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${openaiApiKey}`,

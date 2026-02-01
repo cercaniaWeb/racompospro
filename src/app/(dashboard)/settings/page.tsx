@@ -605,7 +605,7 @@ const SettingsPage = () => {
                     Configuración de Transferencias
                   </h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Estos datos se mostrarán al cliente cuando seleccione "Transferencia" como método de pago.
+                    Estos datos se mostrarán al cliente cuando seleccione &quot;Transferencia&quot; como método de pago.
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

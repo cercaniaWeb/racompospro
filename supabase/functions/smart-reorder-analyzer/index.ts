@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3?target=deno';
+import { aiFetch } from '../shared/utils.ts';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -102,53 +103,27 @@ Rules:
 
 Return ONLY the JSON array.`;
 
-        let geminiResponse;
-        let retryCount = 0;
-        const maxRetries = 3;
-
-        while (retryCount < maxRetries) {
-            try {
-                geminiResponse = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiApiKey}`,
-                    {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{
-                                    text: `${systemPrompt}\n\nSales Data:\n${JSON.stringify(salesData.slice(0, 50), null, 2)}`
-                                }]
-                            }],
-                            generationConfig: {
-                                temperature: 0.2,
-                                maxOutputTokens: 8192,
-                            }
-                        }),
+        const geminiResponse = await aiFetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiApiKey}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `${systemPrompt}\n\nSales Data:\n${JSON.stringify(salesData.slice(0, 50), null, 2)}`
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.2,
+                        maxOutputTokens: 8192,
                     }
-                );
-
-                if (geminiResponse.ok) break;
-
-                if (geminiResponse.status === 503) {
-                    console.log(`Gemini API overloaded, retrying... (${retryCount + 1}/${maxRetries})`);
-                    retryCount++;
-                    await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)); // Exponential backoff
-                    continue;
-                }
-
-                // If not 503, throw error to exit loop
-                const errorText = await geminiResponse.text();
-                throw new Error(`Gemini API error: ${errorText}`);
-
-            } catch (error) {
-                if (retryCount === maxRetries - 1) throw error;
-                retryCount++;
-                await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+                }),
             }
-        }
+        );
 
-        if (!geminiResponse || !geminiResponse.ok) {
-            const errorText = geminiResponse ? await geminiResponse.text() : 'Unknown error';
+        if (!geminiResponse.ok) {
+            const errorText = await geminiResponse.text();
             console.error('Gemini API error after retries:', errorText);
             return new Response(
                 JSON.stringify({ error: 'Failed to analyze with AI', details: errorText }),

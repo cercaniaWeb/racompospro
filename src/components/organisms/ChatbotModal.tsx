@@ -57,13 +57,18 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
                     <div className="flex gap-2">
                         <button
                             onClick={clearHistory}
-                            className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-lg"
+                            className="text-gray-400 hover:text-white transition-colors p-3 hover:bg-white/10 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center"
                             title="Limpiar historial"
+                            aria-label="Limpiar historial de chat"
                         >
-                            <Trash2 size={20} />
+                            <Trash2 size={24} />
                         </button>
-                        <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors p-2">
-                            <X size={24} />
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-white transition-colors p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                            aria-label="Cerrar asistente"
+                        >
+                            <X size={28} />
                         </button>
                     </div>
                 </div>
@@ -79,17 +84,19 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
                             <p className="text-gray-400 max-w-md">
                                 Pregunta sobre tus ventas, productos más vendidos, estadísticas, etc.
                             </p>
-                            <div className="mt-6 text-left space-y-2">
+                            <div className="mt-6 text-left space-y-3">
                                 <p className="text-sm text-gray-500">Ejemplos:</p>
                                 <button
                                     onClick={() => setInput('Muéstrame los 10 productos más vendidos')}
-                                    className="block text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                    className="block text-sm text-blue-400 hover:text-blue-300 transition-colors py-2 px-1 rounded hover:bg-white/5 w-full text-left"
+                                    aria-label="Ejemplo: Muéstrame los 10 productos más vendidos"
                                 >
                                     • Muéstrame los 10 productos más vendidos
                                 </button>
                                 <button
                                     onClick={() => setInput('Ventas totales del último mes')}
-                                    className="block text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                    className="block text-sm text-blue-400 hover:text-blue-300 transition-colors py-2 px-1 rounded hover:bg-white/5 w-full text-left"
+                                    aria-label="Ejemplo: Ventas totales del último mes"
                                 >
                                     • Ventas totales del último mes
                                 </button>
@@ -103,8 +110,8 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
                             >
                                 <div
                                     className={`max-w-[80%] rounded-2xl p-4 ${message.role === 'user'
-                                            ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white'
-                                            : 'bg-gray-800 border border-white/10 text-gray-100'
+                                        ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white'
+                                        : 'bg-gray-800 border border-white/10 text-gray-100'
                                         }`}
                                 >
                                     <p className="text-sm mb-2">{message.content}</p>
@@ -141,9 +148,10 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
                                             )}
                                             <button
                                                 onClick={() => handleExportPDF(message)}
-                                                className="mt-3 flex items-center gap-2 text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                                                className="mt-3 flex items-center gap-2 text-xs text-blue-400 hover:text-blue-300 transition-colors py-3 px-1 rounded min-h-[44px]"
+                                                aria-label="Exportar este reporte a PDF"
                                             >
-                                                <Download size={14} />
+                                                <Download size={18} />
                                                 Exportar a PDF
                                             </button>
                                         </div>
@@ -178,16 +186,18 @@ const ChatbotModal: React.FC<ChatbotModalProps> = ({ isOpen, onClose }) => {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Escribe tu pregunta aquí..."
-                            className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+                            className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors min-h-[48px]"
                             disabled={loading}
+                            aria-label="Escribe tu pregunta para la IA"
                         />
                         <Button
                             type="submit"
                             variant="primary"
                             disabled={loading || !input.trim()}
-                            className="px-6"
+                            className="px-6 min-h-[48px] flex items-center justify-center"
+                            aria-label="Enviar pregunta"
                         >
-                            <Send size={18} />
+                            <Send size={20} />
                         </Button>
                     </div>
                 </form>

@@ -77,14 +77,19 @@ const AgendarModal: React.FC<AgendarModalProps> = ({ isOpen, onClose }) => {
                         <Calendar className="text-primary" />
                         Agendar Visita de Proveedor
                     </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-                        <X size={24} />
+                    <button
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-white transition-colors p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                        aria-label="Cerrar modal de agendar visita"
+                    >
+                        <X size={28} />
                     </button>
                 </div>
 
                 {/* Body */}
                 <div className="p-6 space-y-4">
                     <InputField
+                        id="supplier-name"
                         label="Proveedor"
                         value={formData.supplier_name}
                         onChange={(e) => setFormData({ ...formData, supplier_name: e.target.value })}
@@ -93,12 +98,14 @@ const AgendarModal: React.FC<AgendarModalProps> = ({ isOpen, onClose }) => {
 
                     <div className="grid grid-cols-2 gap-4">
                         <InputField
+                            id="visit-date"
                             label="Fecha"
                             type="date"
                             value={formData.visit_date}
                             onChange={(e) => setFormData({ ...formData, visit_date: e.target.value })}
                         />
                         <InputField
+                            id="visit-time"
                             label="Hora (Opcional)"
                             type="time"
                             value={formData.visit_time}
@@ -108,16 +115,19 @@ const AgendarModal: React.FC<AgendarModalProps> = ({ isOpen, onClose }) => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1">Productos</label>
+                        <label htmlFor="products-textarea" className="block text-sm font-medium text-gray-300 mb-1">Productos</label>
                         <textarea
+                            id="products-textarea"
                             className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:border-primary outline-none min-h-[80px]"
                             placeholder="Lista de productos a entregar..."
                             value={formData.products}
                             onChange={(e) => setFormData({ ...formData, products: e.target.value })}
+                            aria-label="Lista de productos a entregar"
                         />
                     </div>
 
                     <InputField
+                        id="payment-amount"
                         label="Monto a Pagar"
                         type="number"
                         value={formData.amount}
@@ -126,12 +136,14 @@ const AgendarModal: React.FC<AgendarModalProps> = ({ isOpen, onClose }) => {
                     />
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1">Observaciones</label>
+                        <label htmlFor="notes-textarea" className="block text-sm font-medium text-gray-300 mb-1">Observaciones</label>
                         <textarea
+                            id="notes-textarea"
                             className="w-full bg-gray-800 border border-gray-700 rounded-lg p-3 text-white focus:border-primary outline-none min-h-[60px]"
                             placeholder="Notas adicionales..."
                             value={formData.notes}
                             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                            aria-label="Observaciones adicionales"
                         />
                     </div>
                 </div>

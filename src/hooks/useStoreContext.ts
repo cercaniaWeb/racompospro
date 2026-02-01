@@ -29,8 +29,8 @@ export function useStoreContext(): StoreContext {
         async function fetchStoreContext() {
             try {
                 // 1. Verificar localStorage primero
-                const localStoreId = localStorage.getItem('current_store_id');
-                const localStoreName = localStorage.getItem('current_store_name');
+                const localStoreId = typeof window !== 'undefined' ? localStorage.getItem('current_store_id') : null;
+                const localStoreName = typeof window !== 'undefined' ? localStorage.getItem('current_store_name') : null;
 
                 if (localStoreId && localStoreName) {
                     setContext({
@@ -125,6 +125,7 @@ export function useStoreContext(): StoreContext {
  * Útil para componentes que necesitan el ID inmediatamente
  */
 export function getCurrentStoreId(): string {
+    if (typeof window === 'undefined') return 'default-store-id';
     const storedId = localStorage.getItem('current_store_id');
     return storedId || 'default-store-id';
 }

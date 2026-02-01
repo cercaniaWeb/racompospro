@@ -1,13 +1,10 @@
 import React from 'react';
 
-interface ButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'ghost' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
-  onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
-  className?: string;
   fullWidth?: boolean;
   isLoading?: boolean;
 }
@@ -17,11 +14,10 @@ const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'md',
   disabled = false,
-  onClick,
-  type = 'button',
   className = '',
   fullWidth = false,
-  isLoading = false
+  isLoading = false,
+  ...props
 }) => {
   const baseClasses = 'relative inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 overflow-hidden group';
 
@@ -47,10 +43,9 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      type={type}
+      {...props}
       className={classes}
       disabled={disabled || isLoading}
-      onClick={onClick}
     >
       <span className={`relative z-10 flex items-center gap-2 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>{children}</span>
       {isLoading && (

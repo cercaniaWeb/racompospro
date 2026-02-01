@@ -1,5 +1,6 @@
-import React from 'react';
-import { Store, Printer } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Store, Printer, Share2, CheckCircle2 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 interface TicketViewProps {
     sale: any;
@@ -8,81 +9,93 @@ interface TicketViewProps {
 }
 
 export const TicketView: React.FC<TicketViewProps> = ({ sale, items, onNewOrder }) => {
+
+    useEffect(() => {
+        // Celebrate!
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#047857', '#34d399', '#fbbf24']
+        });
+    }, []);
+
     const handlePrint = () => {
         window.print();
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-            <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full print:shadow-none print:w-full print:max-w-none">
-                {/* Header */}
-                <div className="text-center mb-6 border-b border-gray-200 pb-4">
-                    <div className="flex justify-center mb-2">
-                        <Store className="w-8 h-8 text-[#556B2F]" />
-                    </div>
-                    <h1 className="text-xl font-bold text-gray-900">Manda2 Delivery</h1>
-                    <p className="text-sm text-gray-500">Comprobante de Compra</p>
-                    <p className="text-xs text-gray-400 mt-1">{new Date(sale.created_at).toLocaleString()}</p>
-                </div>
+        <div className="min-h-screen bg-emerald-900 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
-                {/* Customer Info */}
-                <div className="mb-6 text-sm">
-                    <p><span className="font-bold">Cliente:</span> {sale.customer_name || 'Invitado'}</p>
-                    <p><span className="font-bold">Método:</span> {sale.payment_method === 'cash' ? 'Efectivo' : 'Tarjeta'}</p>
-                    <p className="mt-2 text-xs text-gray-500 break-words">{sale.notes}</p>
-                </div>
+            <div className="relative animate-in zoom-in duration-500 w-full max-w-sm">
 
-                {/* Items */}
-                <div className="mb-6 border-t border-gray-200 pt-4">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="text-left text-gray-500">
-                                <th className="pb-2">Cant</th>
-                                <th className="pb-2">Producto</th>
-                                <th className="pb-2 text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {items.map((item, index) => (
-                                <tr key={index} className="border-b border-gray-50 last:border-0">
-                                    <td className="py-2 align-top">{item.qty}</td>
-                                    <td className="py-2 align-top">{item.name}</td>
-                                    <td className="py-2 align-top text-right">${(item.price * item.qty).toFixed(2)}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Totals */}
-                <div className="border-t-2 border-gray-800 pt-4 mb-8">
-                    <div className="flex justify-between text-lg font-bold">
-                        <span>Total</span>
-                        <span>${sale.total.toFixed(2)}</span>
+                {/* Success Header */}
+                <div className="absolute -top-12 left-0 right-0 flex justify-center z-10">
+                    <div className="bg-emerald-500 text-white rounded-full p-4 shadow-xl border-4 border-emerald-800">
+                        <CheckCircle2 size={48} />
                     </div>
                 </div>
 
-                {/* Actions */}
-                <div className="space-y-3 print:hidden">
-                    <button
-                        onClick={handlePrint}
-                        className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold flex items-center justify-center hover:bg-gray-800 transition-colors"
-                    >
-                        <Printer className="w-5 h-5 mr-2" />
-                        Imprimir Ticket
-                    </button>
-                    <button
-                        onClick={onNewOrder}
-                        className="w-full bg-[#556B2F] text-white py-3 rounded-xl font-bold hover:bg-[#445725] transition-colors"
-                    >
-                        Nueva Orden
-                    </button>
-                </div>
+                {/* Receipt Card */}
+                <div className="bg-white pt-16 pb-8 px-6 rounded-3xl shadow-2xl relative overflow-hidden print:shadow-none print:w-full">
 
-                {/* Print Footer */}
-                <div className="hidden print:block text-center text-xs text-gray-400 mt-8">
-                    <p>¡Gracias por su preferencia!</p>
-                    <p>www.manda2.app</p>
+                    {/* Jagger Edge Top (CSS Trick) */}
+                    <div className="absolute top-0 left-0 w-full h-4 bg-emerald-900" style={{ clipPath: 'polygon(0% 0%, 5% 100%, 10% 0%, 15% 100%, 20% 0%, 25% 100%, 30% 0%, 35% 100%, 40% 0%, 45% 100%, 50% 0%, 55% 100%, 60% 0%, 65% 100%, 70% 0%, 75% 100%, 80% 0%, 85% 100%, 90% 0%, 95% 100%, 100% 0%)' }}></div>
+
+                    <div className="text-center mb-8">
+                        <h1 className="text-2xl font-black tracking-tighter text-gray-900 mb-1">manda2</h1>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Recibo Digital</p>
+                        <p className="text-xs text-gray-400 mt-2 font-mono">{new Date(sale.created_at).toLocaleString()}</p>
+                    </div>
+
+                    <div className="mb-8 p-4 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-xs text-gray-400 uppercase font-bold">Cliente</span>
+                            <span className="text-sm font-bold text-gray-800">{sale.customer_name || 'Invitado'}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-xs text-gray-400 uppercase font-bold">Pago</span>
+                            <span className="text-sm font-bold text-gray-800 uppercase">{sale.payment_method === 'cash' ? 'Efectivo' : 'Tarjeta'}</span>
+                        </div>
+                    </div>
+
+                    <div className="mb-6 space-y-3">
+                        {items.map((item, index) => (
+                            <div key={index} className="flex justify-between items-baseline text-sm">
+                                <div className="flex gap-2">
+                                    <span className="font-bold text-gray-900 w-6">{item.qty}x</span>
+                                    <span className="text-gray-600 line-clamp-1">{item.name}</span>
+                                </div>
+                                <span className="font-medium text-gray-900">${(item.price * item.qty).toFixed(2)}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="border-t-2 border-dashed border-gray-200 pt-4 mb-8">
+                        <div className="flex justify-between items-end">
+                            <span className="text-lg font-bold text-gray-400">Total</span>
+                            <span className="text-4xl font-black text-emerald-600 tracking-tighter">${sale.total.toFixed(2)}</span>
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="space-y-3 print:hidden">
+                        <button
+                            onClick={handlePrint}
+                            className="w-full bg-gray-100 text-gray-900 py-4 rounded-xl font-bold flex items-center justify-center hover:bg-gray-200 transition-colors"
+                        >
+                            <Printer className="w-5 h-5 mr-2" />
+                            Guardar Ticket
+                        </button>
+                        <button
+                            onClick={onNewOrder}
+                            className="w-full bg-emerald-900 text-white py-4 rounded-xl font-bold hover:bg-emerald-800 transition-colors shadow-lg shadow-emerald-900/20"
+                        >
+                            Hacer otro pedido
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -102,12 +115,10 @@ export const TicketView: React.FC<TicketViewProps> = ({ sale, items, onNewOrder 
             margin: 0;
             padding: 0;
             box-shadow: none;
+            overflow: visible;
           }
           .print\\:hidden {
             display: none !important;
-          }
-          .print\\:block {
-            display: block !important;
           }
         }
       `}</style>

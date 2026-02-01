@@ -29,6 +29,7 @@ export const ROUTES = {
     INVENTORY: '/inventory',
     INVENTORY_TRANSFERS: '/inventory/transferencias',
     INVENTORY_REORDER: '/inventory/reorden',
+    INVENTORY_VOICE: '/inventory-voice',
 
     // Sales
     SALES: '/sales',

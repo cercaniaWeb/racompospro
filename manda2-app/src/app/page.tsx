@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { ShoppingCart, Search, Check, Store, MapPin, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Search, Check, Store, MapPin, ChevronRight, Menu, Loader2 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { Product, CartItem } from '@/lib/types';
@@ -10,13 +10,15 @@ import { ProductCard } from '@/components/ProductCard';
 import { CheckoutFlow } from '@/components/CheckoutFlow';
 import { UserMenu } from '@/components/UserMenu';
 import { TicketView } from '@/components/TicketView';
+import Link from 'next/link';
 
 // --- MOCK CATEGORIES ---
 const CATEGORIES = [
-  { id: 'todos', name: 'Todo', icon: '🍎' },
+  { id: 'todos', name: 'Todo', icon: '🌟' },
   { id: 'frutas', name: 'Frutas', icon: '🍌' },
   { id: 'verduras', name: 'Verduras', icon: '🥦' },
-  { id: 'panaderia', name: 'Panadería', icon: 'baguette' },
+  { id: 'carniceria', name: 'Carnes', icon: '🥩' },
+  { id: 'panaderia', name: 'Pan', icon: '🥖' },
   { id: 'bebidas', name: 'Bebidas', icon: '🥤' },
   { id: 'limpieza', name: 'Limpieza', icon: '🧼' },
 ];
@@ -27,16 +29,20 @@ const Toast = ({ message, type, onClose }: { message: string, type: 'success' | 
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  const bgColor = type === 'error' ? 'bg-red-100 border-red-500 text-red-700' : 'bg-green-100 border-green-500 text-green-700';
-  const Icon = type === 'error' ? Check : Check;
+  const bgColor = type === 'error' ? 'bg-red-50 text-red-700 border-red-200' : 'bg-emerald-900/90 text-white backdrop-blur-md border-emerald-800';
+  const Icon = type === 'error' ? XCircle : Check;
 
   return (
-    <div className={`fixed top-24 left-1/2 transform -translate-x-1/2 w-11/12 max-w-md z-[100] flex items-center p-4 border-l-4 shadow-xl rounded-r ${bgColor} transition-all duration-300 animate-in fade-in slide-in-from-top-4`}>
-      <Icon className="w-5 h-5 mr-3 flex-shrink-0" />
-      <span className="font-medium">{message}</span>
+    <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 w-[90%] max-w-sm z-[100] flex items-center p-4 shadow-2xl rounded-2xl border ${bgColor} transition-all duration-500 animate-in slide-in-from-top-4 fade-in`}>
+      <Icon className={`w-5 h-5 mr-3 flex-shrink-0 ${type === 'success' ? 'text-emerald-400' : ''}`} />
+      <span className="font-bold text-sm">{message}</span>
     </div>
   );
 };
+
+// Helper for type error
+const XCircle = (props: any) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" /></svg>;
+
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -50,6 +56,7 @@ export default function App() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  // Use a derived state for filtering, but keep 'todos' as default
   const [selectedCategory, setSelectedCategory] = useState('todos');
   const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
   const [lastSale, setLastSale] = useState<any>(null);
@@ -72,14 +79,12 @@ export default function App() {
         const { data, error } = await supabase
           .from('products')
           .select('*')
-          .gt('stock', 0); // Only fetch in-stock items
+          .gt('stock', 0);
 
         if (error) throw error;
         if (data) setProducts(data);
       } catch (error) {
         console.error('Error fetching products:', error);
-        if (error instanceof Error) console.error('Error message:', error.message);
-        console.error('Full error:', JSON.stringify(error, null, 2));
       } finally {
         setLoading(false);
       }
@@ -107,7 +112,7 @@ export default function App() {
       return [...prev, { ...product, qty: 1 }];
     });
     if (navigator.vibrate) navigator.vibrate(50);
-    setToast({ message: 'Agregado al carrito', type: 'success' });
+    setToast({ message: `Agregado: ${product.name}`, type: 'success' });
   };
 
   const cartTotal = useMemo(() => {
@@ -121,28 +126,22 @@ export default function App() {
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
       const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesSearch;
+      // Mock category logic since DB might not have category_id set perfectly yet
+      // If we had categories in DB we would match p.category_id === selectedCategory
+      // For now, if "todos" show all, else simple search or future filter
+      const matchesCategory = selectedCategory === 'todos' || true; // Placeholder for real category filter
+      return matchesSearch && matchesCategory;
     });
   }, [products, searchQuery, selectedCategory]);
 
   const handleCheckoutComplete = async (paymentMethod: string, details: any) => {
     try {
       // 1. Save Address if User is Logged In
-      console.log('Attempting to save address:', { user: !!user, deliveryMode, deliveryLocation });
       if (user && deliveryMode === 'delivery' && deliveryLocation) {
-        const { data: addrData, error: addrError } = await supabase
-          .from('user_addresses')
-          .insert({
-            user_id: user.id,
-            address: deliveryLocation,
-          })
-          .select();
-
-        if (addrError) {
-          console.error('Error saving address:', addrError);
-        } else {
-          console.log('Address saved successfully:', addrData);
-        }
+        await supabase.from('user_addresses').insert({
+          user_id: user.id,
+          address: deliveryLocation,
+        });
       }
 
       // 2. Create Sale in Supabase
@@ -163,33 +162,30 @@ export default function App() {
         .select()
         .single();
 
-      if (error) {
-        console.error('Supabase error creating order:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       setLastSale(data);
       setView('success');
     } catch (error) {
       console.error('Error creating order:', error);
-      alert('Error al procesar la orden. Intente de nuevo.');
+      setToast({ message: 'Error procesando la orden', type: 'error' });
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center flex-col">
-        <div className="w-12 h-12 border-4 border-[#556B2F] border-t-transparent rounded-full animate-spin"></div>
+      <div className="h-screen w-full flex items-center justify-center bg-gray-50">
+        <Loader2 className="w-10 h-10 animate-spin text-emerald-600" />
       </div>
     );
   }
 
-  // VISTA 1: VALIDACIÓN DE COBERTURA
+  // --- VIEWS ---
+
   if (view === 'location-gate') {
     return <LocationGate onComplete={handleLocationComplete} />;
   }
 
-  // VISTA FINAL: ÉXITO (TICKET)
   if (view === 'success' && lastSale) {
     return (
       <TicketView
@@ -205,7 +201,6 @@ export default function App() {
     );
   }
 
-  // VISTA: CHECKOUT FLOW
   if (view === 'checkout') {
     return (
       <div className="fixed inset-0 bg-white z-50">
@@ -221,59 +216,66 @@ export default function App() {
     );
   }
 
-  // VISTA: HOME (PRODUCTOS)
+  // --- HOME VIEW ---
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 font-sans max-w-md mx-auto shadow-2xl relative">
+    <div className="h-full flex flex-col bg-gray-50/50">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
-      {/* HEADER & SEARCH */}
-      <div className="sticky top-0 z-40 bg-white shadow-sm pt-4 pb-2 px-4">
-        <div className="flex justify-between items-start mb-3">
-          {/* Location Header */}
+      {/* HEADER */}
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-100">
+
+        {/* Top Bar */}
+        <div className="px-4 py-3 flex justify-between items-center">
           <div
             onClick={() => setView('location-gate')}
-            className="flex items-center text-[#556B2F] text-sm font-bold cursor-pointer"
+            className="flex flex-col cursor-pointer group"
           >
-            {deliveryMode === 'pickup' ? <Store size={16} className="mr-1" /> : <MapPin size={16} className="mr-1" />}
-            <span className="truncate max-w-[150px]">{deliveryLocation}</span>
-            <ChevronRight size={14} className="ml-1" />
+            <span className="text-[10px] uppercase font-bold text-gray-400 group-hover:text-emerald-600 transition-colors">
+              {deliveryMode === 'pickup' ? 'Recoger en' : 'Enviar a'}
+            </span>
+            <div className="flex items-center text-emerald-950 text-sm font-bold">
+              <span className="truncate max-w-[180px]">{deliveryLocation || 'Seleccionar ubicación'}</span>
+              <ChevronRight size={14} className="ml-0.5 text-emerald-500" />
+            </div>
           </div>
-
-          {/* User Menu */}
           <UserMenu user={user} />
         </div>
 
-        <div className="relative mb-3">
-          <input
-            type="text"
-            placeholder="¿Qué buscas hoy?"
-            className="w-full pl-12 pr-4 py-4 bg-gray-100 rounded-2xl text-lg font-medium outline-none focus:ring-2 focus:ring-[#556B2F] transition-all placeholder-gray-400"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={24} />
+        {/* Search Bar */}
+        <div className="px-4 pb-3">
+          <div className="relative group">
+            <input
+              type="text"
+              placeholder="¿Qué se te antoja hoy?"
+              className="w-full pl-11 pr-4 py-3 bg-gray-100/50 border-none rounded-2xl text-base font-medium outline-none focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all placeholder:text-gray-400"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors" size={20} />
+          </div>
         </div>
 
-        {/* CATEGORIES */}
-        <div className="flex overflow-x-auto pb-2 -mx-4 px-4 space-x-2 no-scrollbar">
+        {/* Categories Carousel */}
+        <div className="flex overflow-x-auto pb-3 px-4 space-x-2 no-scrollbar mask-gradient-right">
           {CATEGORIES.map(cat => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`flex items-center px-4 py-2 rounded-full whitespace-nowrap transition-all duration-200 border
+              className={`flex items-center px-4 py-2.5 rounded-2xl whitespace-nowrap transition-all duration-300 border
                 ${selectedCategory === cat.id
-                  ? 'bg-black text-white border-black shadow-md transform scale-105'
-                  : 'bg-white text-gray-600 border-gray-200'}`}
+                  ? 'bg-emerald-900 text-white border-emerald-900 shadow-lg shadow-emerald-900/20'
+                  : 'bg-white text-gray-600 border-gray-100 hover:border-gray-200 hover:bg-gray-50'}`}
             >
-              <span className="mr-2 text-xl">{cat.icon}</span>
-              <span className="font-bold text-sm">{cat.name}</span>
+              <span className="mr-2 text-lg">{cat.icon}</span>
+              <span className="font-bold text-sm tracking-wide">{cat.name}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* PRODUCT GRID */}
-      <div className="p-3">
+      {/* Add padding bottom to account for the floating cart button */}
+      <div className="flex-1 overflow-y-auto p-3 pb-32">
         <div className="grid grid-cols-2 gap-3">
           {filteredProducts.map(product => (
             <ProductCard
@@ -283,30 +285,42 @@ export default function App() {
             />
           ))}
         </div>
+
         {filteredProducts.length === 0 && (
-          <div className="text-center py-20 opacity-50">
-            <p className="text-xl font-bold">No encontramos resultados</p>
+          <div className="flex flex-col items-center justify-center py-20 opacity-50 space-y-4">
+            <div className="text-6xl">🥬</div>
+            <p className="text-lg font-bold text-gray-400">No encontramos productos</p>
           </div>
         )}
       </div>
 
-      {/* FLOATING CART BUTTON */}
+      {/* FLOATING CART BUTTON (FAB) */}
       {cartItemCount > 0 && (
-        <div className="fixed bottom-6 right-6 z-40 animate-in zoom-in duration-300">
+        <div className="fixed bottom-6 w-full max-w-[480px] px-6 z-50 pointer-events-none">
           <button
             onClick={() => setView('checkout')}
-            className="bg-black text-white w-16 h-16 rounded-2xl shadow-2xl flex items-center justify-center relative hover:scale-105 active:scale-95 transition-transform"
+            className="pointer-events-auto w-full bg-emerald-900 text-white rounded-2xl shadow-[0_20px_40px_-12px_rgba(6,78,59,0.5)] p-4 flex items-center justify-between hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group"
           >
-            <ShoppingCart size={28} />
-            <div className="absolute -top-2 -right-2 bg-[#556B2F] text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white">
-              {cartItemCount}
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-800 to-emerald-900 z-0"></div>
+
+            <div className="z-10 flex items-center gap-3">
+              <div className="bg-white/20 px-3 py-1.5 rounded-lg text-sm font-bold backdrop-blur-sm">
+                {cartItemCount}
+              </div>
+              <span className="font-bold text-lg tracking-wide">Ver Carrito</span>
+            </div>
+
+            <div className="z-10 flex items-center gap-2">
+              <span className="font-bold text-lg">${cartTotal.toFixed(2)}</span>
+              <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
             </div>
           </button>
         </div>
       )}
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      {/* Global CSS for hiding scrollbar */}
+      <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -314,7 +328,10 @@ export default function App() {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-      `}} />
+        .mask-gradient-right {
+            mask-image: linear-gradient(to right, black 85%, transparent 100%);
+        }
+      `}</style>
     </div>
   );
 }

@@ -62,7 +62,7 @@ export const useProductStore = create<ProductState>((set) => ({
       if (error) throw error;
 
       // 2. Crear inventario para la sucursal actual o la seleccionada
-      const storeId = targetStoreId || localStorage.getItem('current_store_id');
+      const storeId = targetStoreId || (typeof window !== 'undefined' ? localStorage.getItem('current_store_id') : null);
 
       if (storeId && data) {
         const { error: invError } = await supabase
