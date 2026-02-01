@@ -90,24 +90,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         });
       }
     } catch (err: any) {
-      // FAIL-SAFE: If connection fails, allow login with any credentials in dummy mode
-      if (err.message?.includes('fetch') || err.message?.includes('Network')) {
-        console.warn('Network error detected. Entering MOCK MODE');
-        set({
-          session: { user: { id: 'mock-id' }, access_token: 'mock-token' },
-          user: {
-            id: 'mock-id',
-            email: email,
-            name: 'Usuario Local (Pruebas)',
-            role: 'admin',
-            status: 'active',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
-          loading: false
-        });
-        return;
-      }
       set({ loading: false, error: err.message });
       throw err;
     }
