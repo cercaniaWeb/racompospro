@@ -51,7 +51,7 @@ export function useTransfer() {
         } finally {
             setLoading(false);
         }
-    }, [notify]);
+    }, []);
 
     const createTransfer = useCallback(async (data: CreateTransferData) => {
         setLoading(true);

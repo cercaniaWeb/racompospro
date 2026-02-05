@@ -57,7 +57,7 @@ export const useScale = (): UseScaleReturn => {
    * 1. Tenemos al menos 5 lecturas en los últimos 500ms
    * 2. La variación entre todas las lecturas es <= 0.001kg
    */
-  const checkWeightStability = (newWeight: number): boolean => {
+  const checkWeightStability = useCallback((newWeight: number): boolean => {
     const now = Date.now();
 
     // Agregar nueva lectura al historial
@@ -81,13 +81,13 @@ export const useScale = (): UseScaleReturn => {
 
     // Estable si la variación es menor a la tolerancia
     return variation <= STABILITY_TOLERANCE;
-  };
+  }, []);
 
   /**
    * Parses raw scale data.
    * Example frame: "ST,GS,+  1.500kg"
    */
-  const parseScaleData = (text: string): Partial<ScaleData> | null => {
+  const parseScaleData = useCallback((text: string): Partial<ScaleData> | null => {
     const cleanText = text.trim();
 
     // Find numbers (including decimal point)
@@ -104,9 +104,9 @@ export const useScale = (): UseScaleReturn => {
       }
     }
     return null;
-  };
+  }, []);
 
-  const readLoop = async () => {
+  const readLoop = useCallback(async () => {
     if (!portRef.current || !portRef.current.readable) return;
 
     const textDecoder = new TextDecoderStream();
@@ -154,7 +154,7 @@ export const useScale = (): UseScaleReturn => {
     } finally {
       reader.releaseLock();
     }
-  };
+  }, [parseScaleData, checkWeightStability]);
 
   // Simulation mode - generates random weights
   const startSimulation = () => {
@@ -215,7 +215,7 @@ export const useScale = (): UseScaleReturn => {
       setStatus('error');
       setError('Could not connect: ' + (err as Error).message);
     }
-  }, [scaleSimulationEnabled]);
+  }, [scaleSimulationEnabled, readLoop]);
 
   const disconnect = useCallback(async () => {
     // Stop simulation if active

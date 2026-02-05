@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Truck, Store as StoreIcon, ChevronRight, Locate, Loader2 } from 'lucide-react';
+import { Truck, Store as StoreIcon, ChevronRight, Locate, Loader2, Package } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { Store } from '@/lib/types';
 
@@ -80,31 +80,34 @@ export const LocationGate: React.FC<LocationGateProps> = ({ onComplete }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-gradient-to-br from-[#0f4c3a] to-[#022c22] z-50 flex flex-col p-6 text-white overflow-hidden font-sans">
+        <div className="fixed inset-0 bg-[#020617] z-50 flex flex-col p-8 text-white overflow-hidden font-sans">
             {/* Background Effects */}
-            <div className="absolute top-[-20%] left-[-20%] w-[140%] h-[60%] bg-[#10b981]/20 blur-[100px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[100%] h-[50%] bg-[#059669]/20 blur-[80px] rounded-full pointer-events-none" />
+            <div className="absolute top-[-20%] left-[-20%] w-[150%] h-[70%] bg-emerald-600/20 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[100%] h-[50%] bg-blue-600/10 blur-[100px] rounded-full pointer-events-none" />
 
             <div className="flex-1 flex flex-col justify-center relative z-10 max-w-sm mx-auto w-full">
-                <div className="mb-12 text-center">
-                    <h1 className="text-5xl font-black tracking-tighter mb-2 bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">
+                <div className="mb-14 text-center">
+                    <div className="inline-block p-4 rounded-[2.5rem] bg-emerald-500/10 border border-emerald-500/20 mb-6 backdrop-blur-xl">
+                        <Package size={48} className="text-emerald-400" />
+                    </div>
+                    <h1 className="text-6xl font-black tracking-tighter mb-3 bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
                         manda2
                     </h1>
-                    <p className="text-emerald-100/80 text-lg font-medium">Tu súper fresco, en minutos.</p>
+                    <p className="text-emerald-100/60 text-lg font-bold tracking-tight">Tu súper fresco, en minutos.</p>
                 </div>
 
                 {/* Switcher */}
-                <div className="flex p-1 bg-black/20 backdrop-blur-md rounded-2xl mb-8 border border-white/10">
+                <div className="flex p-1.5 bg-white/5 backdrop-blur-3xl rounded-[2rem] mb-8 border border-white/10 shadow-2xl">
                     <button
                         onClick={() => { setMode('delivery'); setSelectedLocation(''); }}
-                        className={`flex-1 py-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center ${mode === 'delivery' ? 'bg-white text-emerald-900 shadow-lg' : 'text-emerald-100/60 hover:text-white'}`}
+                        className={`flex-1 py-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center ${mode === 'delivery' ? 'bg-white text-slate-900 shadow-[0_10px_25px_rgba(255,255,255,0.2)]' : 'text-white/40 hover:text-white'}`}
                     >
                         <Truck className="w-4 h-4 mr-2" />
-                        A Domicilio
+                        Domicilio
                     </button>
                     <button
                         onClick={() => { setMode('pickup'); setSelectedLocation(''); }}
-                        className={`flex-1 py-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center ${mode === 'pickup' ? 'bg-white text-emerald-900 shadow-lg' : 'text-emerald-100/60 hover:text-white'}`}
+                        className={`flex-1 py-4 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all flex items-center justify-center ${mode === 'pickup' ? 'bg-white text-slate-900 shadow-[0_10px_25px_rgba(255,255,255,0.2)]' : 'text-white/40 hover:text-white'}`}
                     >
                         <StoreIcon className="w-4 h-4 mr-2" />
                         Pick Up
@@ -112,57 +115,57 @@ export const LocationGate: React.FC<LocationGateProps> = ({ onComplete }) => {
                 </div>
 
                 {/* Content Area */}
-                <div className="glass-panel rounded-3xl p-6 animate-in slide-in-from-bottom-4 duration-500">
+                <div className="bg-white/10 backdrop-blur-3xl rounded-[2.5rem] p-8 border border-white/10 shadow-2xl animate-in fade-in zoom-in-95 duration-700">
                     {mode === 'delivery' ? (
-                        <div className="space-y-4">
-                            <label className="block text-sm font-bold text-emerald-900 mb-1">¿Dónde te encuentras?</label>
+                        <div className="space-y-6">
+                            <label className="block text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1">Tu Ubicación</label>
 
                             <button
                                 onClick={handleUseLocation}
                                 disabled={locating}
-                                className="w-full py-4 bg-emerald-50 text-emerald-700 rounded-xl font-bold flex items-center justify-center hover:bg-emerald-100 transition-colors border border-emerald-100"
+                                className="w-full py-5 bg-emerald-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center hover:bg-emerald-400 active:scale-95 transition-all shadow-xl shadow-emerald-500/20"
                             >
-                                {locating ? <Loader2 className="animate-spin w-5 h-5 mr-2" /> : <Locate className="w-5 h-5 mr-2" />}
-                                {locating ? 'Ubicando...' : 'Usar ubicación actual'}
+                                {locating ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : <Locate className="w-4 h-4 mr-2" />}
+                                {locating ? 'Ubicando...' : 'Ubicación Actual'}
                             </button>
 
                             <div className="relative flex py-2 items-center">
-                                <div className="flex-grow border-t border-gray-200"></div>
-                                <span className="flex-shrink-0 mx-4 text-gray-400 text-xs">O ingresa manualmente</span>
-                                <div className="flex-grow border-t border-gray-200"></div>
+                                <div className="flex-grow border-t border-white/10"></div>
+                                <span className="flex-shrink-0 mx-4 text-white/30 text-[10px] font-bold uppercase tracking-widest">O</span>
+                                <div className="flex-grow border-t border-white/10"></div>
                             </div>
 
                             <input
                                 type="text"
-                                className="w-full p-4 bg-white border border-gray-200 rounded-xl font-medium text-emerald-950 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all"
-                                placeholder="Calle, número, colonia..."
+                                className="w-full p-5 bg-black/20 border border-white/10 rounded-2xl font-bold text-white placeholder:text-white/20 outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all text-sm"
+                                placeholder="Ingresa tu dirección..."
                                 value={selectedLocation}
                                 onChange={(e) => setSelectedLocation(e.target.value)}
                             />
                         </div>
                     ) : (
-                        <div className="space-y-4">
-                            <label className="block text-sm font-bold text-emerald-900 mb-1">Elige tu sucursal</label>
+                        <div className="space-y-6">
+                            <label className="block text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1">Elige Sucursal</label>
                             <div className="relative">
                                 <select
-                                    className="w-full p-4 bg-white border border-gray-200 rounded-xl font-medium text-emerald-950 appearance-none outline-none focus:ring-2 focus:ring-emerald-500/50"
+                                    className="w-full p-5 bg-black/20 border border-white/10 rounded-2xl font-bold text-white appearance-none outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all text-sm"
                                     value={selectedLocation}
                                     onChange={(e) => setSelectedLocation(e.target.value)}
                                     disabled={loadingStores}
                                 >
-                                    <option value="">{loadingStores ? 'Cargando...' : 'Selecciona una tienda...'}</option>
+                                    <option value="" className="bg-slate-900">{loadingStores ? 'Cargando...' : 'Selecciona una tienda...'}</option>
                                     {stores.map(s => (
-                                        <option key={s.id} value={s.name}>
+                                        <option key={s.id} value={s.name} className="bg-slate-900">
                                             {s.name}
                                         </option>
                                     ))}
                                 </select>
-                                <ChevronRight className="absolute right-4 top-1/2 transform -translate-y-1/2 rotate-90 text-emerald-900 pointer-events-none" />
+                                <ChevronRight className="absolute right-5 top-1/2 transform -translate-y-1/2 rotate-90 text-emerald-400 pointer-events-none" size={18} />
                             </div>
                             {selectedLocation && (
-                                <div className="p-3 bg-emerald-50 rounded-xl text-xs text-emerald-800 flex gap-2">
-                                    <StoreIcon size={16} />
-                                    <span>Tu pedido estará listo en 20-30 min.</span>
+                                <div className="p-4 bg-emerald-400/10 rounded-2xl border border-emerald-400/20 flex gap-3 animate-in fade-in slide-in-from-top-2">
+                                    <StoreIcon size={18} className="text-emerald-400" />
+                                    <span className="text-xs text-emerald-100/70 font-medium">Listo para recolectar en 20-30 min.</span>
                                 </div>
                             )}
                         </div>
@@ -170,16 +173,17 @@ export const LocationGate: React.FC<LocationGateProps> = ({ onComplete }) => {
                 </div>
             </div>
 
-            <div className="relative z-10 max-w-sm mx-auto w-full mt-4">
+            <div className="relative z-10 max-w-sm mx-auto w-full mt-10 mb-6">
                 <button
                     onClick={handleSubmit}
                     disabled={!selectedLocation}
-                    className="w-full bg-white text-emerald-900 py-4 rounded-xl font-bold text-lg shadow-[0_8px_30px_rgb(0,0,0,0.12)] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                    className="w-full bg-white text-slate-900 py-5 rounded-[1.75rem] font-black text-xs uppercase tracking-[0.2em] shadow-[0_20px_40px_rgba(0,0,0,0.3)] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-emerald-50 active:scale-95 transition-all flex items-center justify-center gap-3"
                 >
-                    {mode === 'delivery' ? 'Confirmar Dirección' : 'Confirmar Tienda'}
-                    <ChevronRight size={20} />
+                    CONTINUAR
+                    <ChevronRight size={18} strokeWidth={3} />
                 </button>
             </div>
+
         </div>
     );
 };

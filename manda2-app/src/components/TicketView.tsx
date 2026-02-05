@@ -59,7 +59,14 @@ export const TicketView: React.FC<TicketViewProps> = ({ sale, items, onNewOrder 
                             <span className="text-xs text-gray-400 uppercase font-bold">Pago</span>
                             <span className="text-sm font-bold text-gray-800 uppercase">{sale.payment_method === 'cash' ? 'Efectivo' : 'Tarjeta'}</span>
                         </div>
+                        <div className="flex justify-between items-start mt-1 pt-1 border-t border-gray-100/50">
+                            <span className="text-xs text-gray-400 uppercase font-bold">Entrega</span>
+                            <span className="text-[10px] font-bold text-gray-700 text-right max-w-[140px] leading-tight">
+                                {sale.delivery_type === 'pickup' ? 'Recoger en Tienda' : (sale.delivery_address || 'Estándar')}
+                            </span>
+                        </div>
                     </div>
+
 
                     <div className="mb-6 space-y-3">
                         {items.map((item, index) => (

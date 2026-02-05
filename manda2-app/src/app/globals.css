@@ -34,15 +34,19 @@
 }
 
 @utility glass-panel {
-  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl;
+  @apply bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl;
 }
 
 @utility glass-card {
-  @apply bg-white/60 backdrop-blur-lg border border-white/20 shadow-sm hover:shadow-md transition-all duration-300;
+  @apply bg-white/70 backdrop-blur-xl border border-white/30 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300;
 }
 
 @utility btn-primary {
-  @apply bg-[hsl(var(--primary))] text-white shadow-lg hover:shadow-[hsl(var(--primary))]/30 hover:-translate-y-0.5 active:scale-95 transition-all duration-300 rounded-2xl font-bold;
+  @apply bg-gradient-to-r from-emerald-900 to-emerald-800 text-white shadow-lg hover:shadow-emerald-900/30 hover:scale-[1.02] active:scale-95 transition-all duration-300 rounded-2xl font-bold tracking-wide;
+}
+
+@utility shimmer {
+  @apply relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_1.5s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent;
 }
 
 @utility text-balance {

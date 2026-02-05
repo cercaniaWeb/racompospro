@@ -9,10 +9,21 @@ interface KitchenMonitorProps {
     onClose: () => void;
 }
 
+interface OrderItem {
+    id: string;
+    product_id: string;
+    quantity: number;
+    unit_price: number;
+    total_price: number;
+    product: {
+        name: string;
+    };
+}
+
 interface Order {
     id: string;
     customer_name: string;
-    total: number;
+    total_amount: number;
     payment_method: string;
     fulfillment_status: 'pending' | 'preparing' | 'ready' | 'completed';
     created_at: string;
@@ -21,27 +32,37 @@ interface Order {
     delivery_type?: 'pickup' | 'delivery';
     delivery_address?: string;
     payment_status?: string;
+    items?: OrderItem[];
 }
 
 const KitchenMonitor: React.FC<KitchenMonitorProps> = ({ isOpen, onClose }) => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (isNewOrder = false) => {
         setLoading(true);
         const { data, error } = await supabase
             .from('sales')
-            .select('*')
+            .select('*, items:sale_items(*, product:products(name))')
             .neq('fulfillment_status', 'completed')
-            .eq('source', 'Manda2') // Filter for Manda2 orders
+            .eq('source', 'Manda2')
             .order('created_at', { ascending: true });
 
         if (error) {
             console.error('Error fetching orders:', error);
         } else {
             setOrders(data || []);
+            if (isNewOrder) {
+                playNotificationSound();
+            }
         }
         setLoading(false);
+    };
+
+    const playNotificationSound = () => {
+        const audio = new Audio('/notification.mp3'); // Ensure this file exists in /public
+        audio.play().catch(e => console.warn('Audio play blocked by browser:', e));
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
     };
 
     useEffect(() => {
@@ -61,7 +82,7 @@ const KitchenMonitor: React.FC<KitchenMonitorProps> = ({ isOpen, onClose }) => {
                     },
                     (payload) => {
                         console.log('Realtime update received:', payload);
-                        fetchOrders(); // Refresh orders on any change
+                        fetchOrders(payload.eventType === 'INSERT');
                     }
                 )
                 .subscribe();
@@ -112,7 +133,7 @@ const KitchenMonitor: React.FC<KitchenMonitorProps> = ({ isOpen, onClose }) => {
                     </div>
                     <div className="flex items-center gap-3">
                         <button
-                            onClick={fetchOrders}
+                            onClick={() => fetchOrders(false)}
                             className="p-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-300 transition-colors"
                             title="Actualizar"
                         >
@@ -184,18 +205,38 @@ const KitchenMonitor: React.FC<KitchenMonitorProps> = ({ isOpen, onClose }) => {
                                                 </div>
                                             ) : (
                                                 <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-2 text-center text-red-400 font-bold text-sm uppercase animate-pulse">
-                                                    Cobrar: ${order.total.toFixed(2)}
+                                                    Cobrar: ${order.total_amount.toFixed(2)}
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="text-sm text-gray-300 mb-4 whitespace-pre-wrap font-mono bg-black/20 p-3 rounded-lg border border-gray-800">
-                                            {order.notes}
+                                        <div className="bg-black/40 border border-gray-800 rounded-xl overflow-hidden mb-4">
+                                            <div className="px-3 py-2 bg-gray-800/50 border-b border-gray-800 text-[10px] uppercase font-bold text-gray-400">
+                                                Productos
+                                            </div>
+                                            <div className="divide-y divide-gray-800">
+                                                {order.items?.map((item) => (
+                                                    <div key={item.id} className="p-3 flex justify-between items-center hover:bg-white/5 transition-colors">
+                                                        <div className="flex-1">
+                                                            <div className="text-white font-medium text-sm">{item.product?.name || 'Producto'}</div>
+                                                            <div className="text-[10px] text-gray-500">{item.quantity} x ${item.unit_price.toFixed(2)}</div>
+                                                        </div>
+                                                        <div className="text-white font-bold">${item.total_price.toFixed(2)}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="p-3 bg-gray-800/30 flex justify-between items-center border-t border-gray-800">
+                                                <span className="text-gray-400 text-xs font-bold uppercase">Total</span>
+                                                <span className="text-green-400 font-bold text-lg">${order.total_amount.toFixed(2)}</span>
+                                            </div>
                                         </div>
-                                        <div className="flex justify-between items-center text-sm text-gray-400">
-                                            <span>Total:</span>
-                                            <span className="text-white font-bold text-lg">${order.total.toFixed(2)}</span>
-                                        </div>
+
+                                        {order.notes && (
+                                            <div className="text-xs text-gray-400 mb-4 italic bg-gray-900 p-2 rounded-lg border border-gray-800">
+                                                &quot;{order.notes}&quot;
+                                            </div>
+                                        )}
+
                                     </div>
 
                                     {/* Card Footer (Actions) */}

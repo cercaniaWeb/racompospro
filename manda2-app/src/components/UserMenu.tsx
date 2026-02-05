@@ -5,7 +5,15 @@ import { User } from '@supabase/supabase-js'
 import { signout } from '@/app/auth/actions'
 import { User as UserIcon, LogOut, Package, ChevronDown } from 'lucide-react'
 
-export function UserMenu({ user }: { user: User | null }) {
+export function UserMenu({
+    user,
+    onProfile,
+    onSignOut
+}: {
+    user: User | null,
+    onProfile: () => void,
+    onSignOut: () => void
+}) {
     const [isOpen, setIsOpen] = useState(false)
 
     if (!user) {
@@ -50,15 +58,16 @@ export function UserMenu({ user }: { user: User | null }) {
                         </div>
 
                         <div className="px-2 space-y-1">
-                            <a
-                                href="/orders"
+                            <button
+                                onClick={() => { setIsOpen(false); onProfile(); }}
                                 className="w-full text-left px-3 py-2.5 text-sm font-medium text-gray-600 hover:text-emerald-900 hover:bg-emerald-50 rounded-xl flex items-center gap-3 transition-colors"
                             >
                                 <div className="p-1.5 bg-emerald-100/50 text-emerald-700 rounded-lg">
                                     <Package size={16} />
                                 </div>
                                 Mis Pedidos
-                            </a>
+                            </button>
+
 
                             <div className="h-px bg-gray-50 my-1"></div>
 

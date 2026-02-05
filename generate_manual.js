@@ -76,7 +76,7 @@ async function generatePDF() {
     let y = 20;
 
     const artifactsDir = '/home/lr/.gemini/antigravity/brain/f8cc4c64-4e14-4c91-956b-361d70113e14';
-    const output = path.join(artifactsDir, 'Guia_Usuario_Detallada_RacomPOS.pdf');
+    const output = path.join(process.cwd(), 'Guia_Usuario_Detallada_RacomPOS.pdf');
 
     console.log('Generando Guía Detallada...');
 

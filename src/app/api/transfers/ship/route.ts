@@ -54,7 +54,6 @@ export async function POST(request: Request) {
             .from('transfers')
             .update({
                 status: 'in_transit',
-                shipped_at: new Date().toISOString(), // Keep shipped_at as it makes sense for 'in_transit'
                 updated_at: new Date().toISOString()
             })
             .eq('id', transfer_id);

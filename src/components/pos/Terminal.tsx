@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, CartItem, ProductLocal } from '@/lib/db';
 import { useScale } from '@/hooks/useScale';
@@ -156,10 +157,77 @@ export default function POSTerminal() {
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-  // Reset page when filters change
+  // Keyboard Shortcuts Handler
   useEffect(() => {
-    setCurrentPage(1);
-  }, [query, selectedCategory, showBulkOnly]);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts if user is typing in an input or textarea
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        (e.target as HTMLElement).isContentEditable
+      ) {
+        // Allow ESC even in inputs to blur/clear
+        if (e.key === 'Escape') {
+          searchInputRef.current?.blur();
+          setQuery('');
+        }
+        return;
+      }
+
+      // Functional Keys
+      if (e.key === 'F2') {
+        e.preventDefault();
+        setShowDiscountModal(true);
+      } else if (e.key === 'F4') {
+        e.preventDefault();
+        setShowHistoryModal(true);
+      } else if (e.key === 'F8') {
+        e.preventDefault();
+        setShowKitchenMonitor(true);
+      } else if (e.key === 'F9') {
+        e.preventDefault();
+        setShowWithdrawalModal(true);
+      } else if (e.key === 'F10') {
+        e.preventDefault();
+        if (cart.length > 0) setShowPaymentModal(true);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        // Close modals if possible, or clear search
+        setShowScanner(false);
+        setQuery('');
+      }
+
+      // Alt + Keys
+      if (e.altKey) {
+        switch (e.key.toLowerCase()) {
+          case 'c':
+            e.preventDefault();
+            setShowConsumptionModal(true);
+            break;
+          case 'a':
+            e.preventDefault();
+            setShowAgendarModal(true);
+            break;
+          case 'q':
+            e.preventDefault();
+            setShowCloseRegisterModal(true);
+            break;
+          case 'n':
+            e.preventDefault();
+            const notes = prompt('Agregar nota a la venta:', saleNotes);
+            if (notes !== null) setSaleNotes(notes);
+            break;
+          case 's':
+            e.preventDefault();
+            syncProducts();
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [cart.length, saleNotes, syncProducts]);
 
   // ... (rest of handlers)
 
@@ -248,7 +316,7 @@ export default function POSTerminal() {
               title="Agendar"
             >
               <Calendar size={16} />
-              <span className="hidden md:inline">Agendar</span>
+              <span className="hidden md:inline">Agendar <span className="text-[10px] opacity-40 ml-1">Alt+A</span></span>
             </button>
             <button
               className="bg-gray-700 hover:bg-gray-600 text-white p-2 md:px-3 md:py-2 rounded-lg flex items-center gap-2 transition-colors text-sm font-bold"
@@ -256,7 +324,7 @@ export default function POSTerminal() {
               title="Ver Ventas"
             >
               <History size={16} />
-              <span className="hidden md:inline">Ver Ventas</span>
+              <span className="hidden md:inline">Ver Ventas <span className="text-[10px] opacity-40 ml-1">F4</span></span>
             </button>
             <button
               className="bg-orange-600 hover:bg-orange-500 text-white p-2 md:px-3 md:py-2 rounded-lg flex items-center gap-2 transition-colors text-sm font-bold"
@@ -264,7 +332,7 @@ export default function POSTerminal() {
               title="Delivery"
             >
               <Bike size={16} />
-              <span className="hidden md:inline">Delivery</span>
+              <span className="hidden md:inline">Delivery <span className="text-[10px] opacity-40 ml-1">F8</span></span>
             </button>
             <button
               className="bg-red-900/30 hover:bg-red-900/50 text-red-400 border border-red-900/50 p-2 md:px-3 md:py-2 rounded-lg flex items-center gap-2 transition-colors text-sm font-bold"
@@ -272,7 +340,7 @@ export default function POSTerminal() {
               title="Cerrar Caja"
             >
               <Lock size={16} />
-              <span className="hidden md:inline">Cerrar Caja</span>
+              <span className="hidden md:inline">Cerrar Caja <span className="text-[10px] opacity-40 ml-1">Alt+Q</span></span>
             </button>
           </div>
           <div className="text-sm text-gray-400 hidden md:block">
@@ -381,12 +449,14 @@ export default function POSTerminal() {
                 onClick={() => handleAddToCart(product)}
                 className="bg-gray-800 hover:bg-gray-700 p-4 rounded-xl flex flex-col gap-2 transition-all border border-gray-700 hover:border-blue-500 group text-left h-48"
               >
-                <div className="h-20 w-full bg-gray-900 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
+                <div className="relative h-20 w-full bg-gray-900 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
                   {product.image_url ? (
-                    <img
+                    <Image
                       src={product.image_url}
                       alt={product.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                      className="object-cover"
                     />
                   ) : (
                     <span className="text-gray-600 text-xs">NO IMG</span>
@@ -501,7 +571,7 @@ export default function POSTerminal() {
                 className="bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-xl font-bold text-xl flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-green-900/20 w-full"
               >
                 <Banknote size={28} />
-                <span>Pagar</span>
+                <span className="flex items-center gap-2">Pagar <span className="text-xs bg-black/20 px-1.5 py-0.5 rounded opacity-60">F10</span></span>
               </button>
 
               <button
@@ -509,7 +579,7 @@ export default function POSTerminal() {
                 className="bg-orange-600 hover:bg-orange-700 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-orange-900/20 flex-1"
               >
                 <Coffee size={18} />
-                <span>Consumo</span>
+                <span className="flex items-center gap-1.5 text-xs">Consumo <span className="opacity-40 font-mono">Alt+C</span></span>
               </button>
 
               <button
@@ -517,7 +587,7 @@ export default function POSTerminal() {
                 className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-blue-900/20 flex-1"
               >
                 <CreditCard size={18} />
-                <span>Retiro</span>
+                <span className="flex items-center gap-1.5 text-xs">Retiro <span className="opacity-40 font-mono">F9</span></span>
               </button>
 
               <button
@@ -525,7 +595,7 @@ export default function POSTerminal() {
                 className="bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-purple-900/20 flex-1"
               >
                 <Tag size={18} />
-                <span>Descuento</span>
+                <span className="flex items-center gap-1.5 text-xs">Descuento <span className="opacity-40 font-mono">F2</span></span>
               </button>
 
               <button
@@ -536,7 +606,7 @@ export default function POSTerminal() {
                 className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-transform active:scale-95 shadow-lg shadow-indigo-900/20 flex-1"
               >
                 <MessageSquare size={18} />
-                <span>Nota</span>
+                <span className="flex items-center gap-1.5 text-xs">Nota <span className="opacity-40 font-mono">Alt+N</span></span>
               </button>
             </div>
           </div>

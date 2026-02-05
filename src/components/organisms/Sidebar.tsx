@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Text from '@/components/atoms/Text';
 import { ROUTES } from '@/lib/routes';
 import Button from '@/components/atoms/Button';
@@ -44,7 +45,14 @@ const Sidebar: React.FC<SidebarProps> = ({
       >
         <div className="p-4 border-b border-border flex items-center justify-between">
           <Link href={ROUTES.DASHBOARD} className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <img src="/images/logo.png" alt="Logo" className="h-8 w-auto object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+            <Image
+              src="/images/logo.png"
+              alt="Logo"
+              width={32}
+              height={32}
+              className="h-8 w-auto object-contain"
+              priority
+            />
             <Text variant="h5" className="font-bold text-foreground">
               {title}
             </Text>
@@ -65,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {items.map((item) => (
             <div key={item.id}>
               {item.href ? (
-                <a
+                <Link
                   href={item.href}
                   className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${item.active
                     ? 'bg-primary text-primary-foreground'
@@ -74,7 +82,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 >
                   {item.icon && <span className="mr-3">{item.icon}</span>}
                   {item.label}
-                </a>
+                </Link>
               ) : (
                 <button
                   onClick={item.onClick}

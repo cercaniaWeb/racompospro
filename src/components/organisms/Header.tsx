@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import UserAvatar from '@/components/molecules/UserAvatar';
 import Button from '@/components/atoms/Button';
 import Text from '@/components/atoms/Text';
@@ -65,7 +66,16 @@ const Header: React.FC<HeaderProps> = ({
               </Button>
             )}
             <div className="flex items-center gap-3">
-              <img src="/images/logo.png" alt="Logo" className="h-8 w-auto object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+              <div className="relative h-8 w-auto">
+                <Image
+                  src="/images/logo.png"
+                  alt="Logo"
+                  width={32}
+                  height={32}
+                  className="h-8 w-auto object-contain"
+                  priority
+                />
+              </div>
               <Text variant="h4" className="font-bold text-foreground">
                 {title}
               </Text>

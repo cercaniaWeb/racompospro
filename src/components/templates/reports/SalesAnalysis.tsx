@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '@/components/molecules/Card'; // Assuming distinct Card exists or using simple div
+
 import Text from '@/components/atoms/Text';
 import SalesChart from '@/components/organisms/SalesChart';
 import { useReportMetrics } from '@/hooks/useReportMetrics';

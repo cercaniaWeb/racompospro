@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { X, User, Mail, Camera } from 'lucide-react';
 import { useModal } from '@/hooks/useModal';
 import Button from '@/components/atoms/Button';
@@ -113,12 +114,13 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose }) 
                     {/* Avatar Preview */}
                     <div className="flex justify-center mb-6">
                         <div className="relative group">
-                            <div className="w-24 h-24 rounded-full bg-gray-800 border-2 border-gray-700 flex items-center justify-center overflow-hidden">
+                            <div className="relative w-24 h-24 rounded-full bg-gray-800 border-2 border-gray-700 flex items-center justify-center overflow-hidden">
                                 {formData.avatar_url ? (
-                                    <img
+                                    <Image
                                         src={formData.avatar_url}
                                         alt="Avatar"
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        className="object-cover"
                                     />
                                 ) : (
                                     <span className="text-3xl font-bold text-gray-500">

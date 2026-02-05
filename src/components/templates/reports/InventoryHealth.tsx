@@ -35,7 +35,7 @@ export const InventoryHealth = () => {
                 </div>
 
                 <div className="glass p-6 rounded-xl border border-white/10">
-                    <Text className="text-gray-400 text-sm">Baja Rotación (>30 días)</Text>
+                    <Text className="text-gray-400 text-sm">Baja Rotación (&gt;30 días)</Text>
                     <div className="text-2xl font-bold text-yellow-500 mt-1">
                         12
                     </div>

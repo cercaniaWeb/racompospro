@@ -18,26 +18,27 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ cart, total, deliver
     const [streetDetails, setStreetDetails] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Common Header
+    // Common Header (Glassmorphism)
     const Header = ({ title, showBack = true }: { title: string, showBack?: boolean }) => (
-        <div className="bg-white/80 backdrop-blur-xl px-4 py-4 sticky top-0 z-20 border-b border-gray-100">
+        <div className="bg-white/80 backdrop-blur-3xl px-6 py-6 sticky top-0 z-20 border-b border-white/20 shadow-sm">
             <div className="flex items-center">
                 {showBack && (
-                    <button onClick={() => step === 1 ? onBack() : setStep(step - 1)} className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors mr-2">
-                        <ArrowLeft size={20} />
+                    <button onClick={() => step === 1 ? onBack() : setStep(step - 1)} className="p-2.5 -ml-3 text-slate-900 hover:bg-slate-100 rounded-2xl transition-all mr-3 border border-transparent hover:border-slate-200">
+                        <ArrowLeft size={20} strokeWidth={3} />
                     </button>
                 )}
-                <h2 className="text-xl font-bold text-center flex-1 pr-8">{title}</h2>
+                <h2 className="text-xl font-black uppercase tracking-tight text-slate-900 flex-1">{title}</h2>
             </div>
-            {/* Progress Bar */}
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gray-100">
+            {/* Progress Bar Container */}
+            <div className="absolute bottom-0 left-0 w-full h-[3px] bg-slate-100">
                 <div
-                    className="h-full bg-emerald-600 transition-all duration-500 ease-out"
+                    className="h-full bg-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all duration-1000 ease-[cubic-bezier(0.65,0,0.35,1)]"
                     style={{ width: `${(step / 3) * 100}%` }}
                 />
             </div>
         </div>
     );
+
 
     // STEP 1: REVIEW CART
     if (step === 1) {
@@ -78,20 +79,24 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ cart, total, deliver
                     )}
                 </div>
 
-                <div className="fixed bottom-0 left-0 w-full max-w-[480px] bg-white border-t border-gray-100 p-6 z-30 rounded-t-3xl shadow-lg">
-                    <div className="flex justify-between items-end mb-6">
-                        <span className="text-gray-400 font-medium">Total Estimado</span>
-                        <span className="text-4xl font-extrabold text-gray-900 tracking-tighter">${total.toFixed(2)}</span>
+                <div className="fixed bottom-0 left-0 w-full max-w-[480px] bg-white/80 backdrop-blur-3xl border-t border-white/40 p-8 z-30 rounded-t-[3rem] shadow-[0_-20px_50px_rgba(0,0,0,0.1)]">
+                    <div className="flex justify-between items-center mb-8">
+                        <span className="text-slate-400 font-black uppercase tracking-widest text-[10px]">Total Estimado</span>
+                        <div className="flex items-baseline gap-1 text-slate-900">
+                            <span className="text-xl font-black">$</span>
+                            <span className="text-5xl font-black tracking-tighter">{total.toFixed(2)}</span>
+                        </div>
                     </div>
                     <button
                         onClick={() => setStep(2)}
                         disabled={cart.length === 0}
-                        className="w-full bg-emerald-900 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-emerald-900/20 disabled:opacity-50 active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+                        className="w-full bg-emerald-900 text-white py-5 rounded-3xl font-black text-lg shadow-2xl shadow-emerald-900/40 disabled:opacity-50 active:scale-[0.98] transition-all flex items-center justify-center gap-3 group border border-emerald-800"
                     >
-                        Continuar
-                        <ChevronRight size={20} />
+                        CONTINUAR
+                        <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                 </div>
+
             </div>
         );
     }
@@ -183,12 +188,17 @@ export const CheckoutFlow: React.FC<CheckoutFlowProps> = ({ cart, total, deliver
             <div className="flex flex-col h-full bg-gray-50/50">
                 <Header title="Método de Pago" />
 
-                <div className="flex-1 p-4 space-y-6">
+                <div className="flex-1 p-6 space-y-8">
                     {/* Total Card */}
-                    <div className="bg-emerald-900 text-white p-6 rounded-3xl shadow-lg shadow-emerald-900/20 text-center">
-                        <p className="text-emerald-200 text-sm font-medium mb-1">Total a Pagar</p>
-                        <p className="text-5xl font-black tracking-tighter">${total.toFixed(2)}</p>
+                    <div className="bg-emerald-900 text-white p-10 rounded-[3rem] shadow-2xl shadow-emerald-900/40 text-center relative overflow-hidden border border-emerald-800">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-800/50 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+                        <p className="text-emerald-400/80 text-[10px] font-black uppercase tracking-[0.2em] mb-2 relative z-10">Total a Pagar</p>
+                        <p className="text-6xl font-black tracking-tighter relative z-10 leading-none">
+                            <span className="text-2xl align-top mr-1">$</span>
+                            {total.toFixed(2)}
+                        </p>
                     </div>
+
 
                     <div className="space-y-3">
                         <label className="text-gray-400 text-xs font-bold uppercase tracking-wider pl-2">Selecciona una opción</label>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import Image from 'next/image';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { useProductStore } from '@/store/productStore';
@@ -488,7 +489,13 @@ export const VoiceInventory = () => {
                             {/* Preview of Image if exists */}
                             {form.image_url && (
                                 <div className="mt-8 p-4 bg-primary/10 border border-primary/20 rounded-2xl flex items-center gap-4 animate-fade-in backdrop-blur-sm">
-                                    <img src={form.image_url} alt="Preview" className="w-16 h-16 rounded-xl object-cover shadow-lg" />
+                                    <Image
+                                        src={form.image_url}
+                                        alt="Preview"
+                                        width={64}
+                                        height={64}
+                                        className="rounded-xl object-cover shadow-lg"
+                                    />
                                     <div>
                                         <p className="text-sm font-bold text-primary">Vista Previa Generada</p>
                                         <p className="text-xs text-muted-foreground opacity-80">Esta imagen se asignará al producto.</p>

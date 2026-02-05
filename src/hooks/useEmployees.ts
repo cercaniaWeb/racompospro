@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { db } from '@/lib/db';
 import { UserRole } from '@/types/roles';
 
@@ -31,7 +31,7 @@ export function useEmployees(storeId?: string): UseEmployeesResult {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchEmployees = async () => {
+    const fetchEmployees = useCallback(async () => {
         setIsLoading(true);
         setError(null);
 
@@ -83,7 +83,7 @@ export function useEmployees(storeId?: string): UseEmployeesResult {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [storeId]);
 
     useEffect(() => {
         // Intentar cargar desde cache primero para mejor UX
@@ -108,7 +108,7 @@ export function useEmployees(storeId?: string): UseEmployeesResult {
 
         // Si no hay cache válido, fetch normal
         fetchEmployees();
-    }, [storeId]);
+    }, [fetchEmployees]);
 
     return {
         employees,
