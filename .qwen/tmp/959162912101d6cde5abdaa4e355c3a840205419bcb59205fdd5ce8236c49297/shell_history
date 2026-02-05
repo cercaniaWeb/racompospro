@@ -1,6 +1,0 @@
-pnpm build
-pnpm dev
-pnpm install
-pnpm start
-exit
-stop
