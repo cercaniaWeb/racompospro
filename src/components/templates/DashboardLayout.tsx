@@ -45,6 +45,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   // Global Realtime Notifications
   React.useEffect(() => {
+    const currentStoreId = typeof window !== 'undefined' ? localStorage.getItem('current_store_id') : null;
+
     const channel = supabase
       .channel('global_notifications')
       .on(
@@ -54,9 +56,24 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           schema: 'public',
           table: 'transfers'
         },
-        (payload) => {
-          console.log('New transfer received:', payload);
-          notify.info('Nueva Transferencia', `Se ha creado una nueva transferencia #${payload.new.id.slice(0, 8)}`);
+        async (payload) => {
+          console.log('[REALTIME] New transfer detected:', payload);
+          const newTransfer = payload.new;
+
+          // Only notify if it's for MY store
+          if (currentStoreId && newTransfer.destination_store_id === currentStoreId) {
+            // Fetch origin store name for a better message
+            const { data: origin } = await supabase
+              .from('stores')
+              .select('name')
+              .eq('id', newTransfer.origin_store_id)
+              .single();
+
+            notify.info(
+              'Solicitud de Mercancía',
+              `La sucursal ${origin?.name || 'Origen'} solicita productos.`
+            );
+          }
         }
       )
       .subscribe();

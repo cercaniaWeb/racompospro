@@ -38,8 +38,8 @@ export async function sendTransferNotification(targetStoreId: string, title: str
             title,
             body,
             url,
-            icon: '/icons/icon-192x192.png',
-            badge: '/icons/badge-72x72.png'
+            icon: '/icon-192x192.png',
+            badge: '/icon-192x192.png'
         });
 
         const sendPromises = subscriptions.map(async (sub) => {
