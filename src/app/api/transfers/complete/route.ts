@@ -113,6 +113,24 @@ export async function POST(request: Request) {
             throw updateError;
         }
 
+        // 4. Send Notification to Destination Store (Provider)
+        try {
+            const { data: originStore } = await supabase
+                .from('stores')
+                .select('name')
+                .eq('id', transfer.origin_store_id)
+                .single();
+
+            const title = 'Transferencia Recibida';
+            const body = `La sucursal ${originStore?.name || 'Solicitante'} ha confirmado la recepción del pedido.`;
+            const url = '/inventory/transferencias';
+
+            const { sendTransferNotification } = await import('@/lib/notifications');
+            await sendTransferNotification(transfer.destination_store_id, title, body, url);
+        } catch (notifyError) {
+            console.error('Notification error (ignoring):', notifyError);
+        }
+
         console.log('[TRANSFER API] Transfer completed successfully!');
         return NextResponse.json({ success: true });
     } catch (error: any) {
