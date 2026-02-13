@@ -66,6 +66,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           // 1. NUEVA SOLICITUD (INSERT) -> Notificar al Proveedor (Destino)
           if (payload.eventType === 'INSERT' && dynamicStoreId === newTransfer.destination_store_id) {
+            console.log('[REALTIME] Detectada nueva solicitud para esta tienda.');
             const { data: origin } = await supabase.from('stores').select('name').eq('id', newTransfer.origin_store_id).single();
             store.addNotification({
               type: 'info',
@@ -77,8 +78,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           // 2. PEDIDO ENVIADO (UPDATE) -> Notificar al Solicitante (Origen)
           if (payload.eventType === 'UPDATE' &&
             newTransfer.status === 'in_transit' &&
-            (oldTransfer?.status === 'pending' || !oldTransfer) &&
             dynamicStoreId === newTransfer.origin_store_id) {
+
+            console.log('[REALTIME] Detectado envío de pedido para esta tienda.');
             const { data: dest } = await supabase.from('stores').select('name').eq('id', newTransfer.destination_store_id).single();
             store.addNotification({
               type: 'success',
@@ -90,8 +92,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           // 3. PEDIDO RECIBIDO (UPDATE) -> Notificar al Proveedor (Destino)
           if (payload.eventType === 'UPDATE' &&
             newTransfer.status === 'completed' &&
-            (oldTransfer?.status === 'in_transit' || !oldTransfer) &&
             dynamicStoreId === newTransfer.destination_store_id) {
+
+            console.log('[REALTIME] Detectada mercancía recibida en destino.');
             const { data: origin } = await supabase.from('stores').select('name').eq('id', newTransfer.origin_store_id).single();
             store.addNotification({
               type: 'success',
