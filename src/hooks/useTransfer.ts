@@ -173,12 +173,46 @@ export function useTransfer() {
         }
     }, [notify]);
 
+    const completeTransfer = useCallback(async (id: string, receivedItems: { product_id: string; received_quantity: number }[]) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('Usuario no autenticado');
+
+            const response = await fetch('/api/transfers/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    transfer_id: id,
+                    user_id: user.id,
+                    received_items: receivedItems
+                })
+            });
+
+            if (!response.ok) {
+                const result = await response.json();
+                throw new Error(result.error || 'Failed to complete transfer');
+            }
+
+            notify.success('Éxito', 'Transferencia completada correctamente');
+        } catch (err: any) {
+            console.error('Error completing transfer:', err);
+            setError(err.message);
+            notify.error('Error', 'No se pudo completar la transferencia');
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, [notify]);
+
     return {
         loading,
         error,
         fetchTransfers,
         createTransfer,
         updateStatus,
-        shipTransfer
+        shipTransfer,
+        completeTransfer
     };
 }

@@ -16,10 +16,10 @@ export async function POST(request: Request) {
             process.env.SUPABASE_SERVICE_ROLE_KEY!
         );
 
-        // 1. Get transfer details
+        // 1. Get transfer details and items
         const { data: transfer, error: transferError } = await supabase
             .from('transfers')
-            .select('*')
+            .select('*, items:transfer_items(*)')
             .eq('id', transfer_id)
             .single();
 
@@ -34,23 +34,57 @@ export async function POST(request: Request) {
             );
         }
 
-        // 2. Validate User Authorization (User must belong to origin store)
+        // 2. Validate User Authorization (User must belong to DESTINATION store as they are providing the goods)
         const { data: userStore, error: authError } = await supabase
             .from('user_stores')
             .select('id')
             .eq('user_id', user_id)
-            .eq('store_id', transfer.origin_store_id)
+            .eq('store_id', transfer.destination_store_id)
             .single();
 
         if (authError || !userStore) {
             return NextResponse.json(
-                { error: 'Unauthorized: User does not belong to origin store' },
+                { error: 'Unauthorized: User does not belong to provider (destination) store' },
                 { status: 403 }
             );
         }
 
-        // 3. Update Status to 'in_transit'
-        const { error: updateError } = await supabase
+        // 3. Check Stock & Deduct from Destination Store
+        for (const item of transfer.items) {
+            const { data: inventory, error: stockError } = await supabase
+                .from('inventory')
+                .select('id, stock')
+                .eq('store_id', transfer.destination_store_id)
+                .eq('product_id', item.product_id)
+                .single();
+
+            if (stockError || !inventory) {
+                return NextResponse.json(
+                    { error: `Product ${item.product_id} not found in provider's inventory` },
+                    { status: 400 }
+                );
+            }
+
+            if (inventory.stock < item.quantity) {
+                return NextResponse.json(
+                    { error: `Insufficient stock in provider's store for product ${item.product_id}. Available: ${inventory.stock}` },
+                    { status: 400 }
+                );
+            }
+
+            // Deduct stock from Provider (Destination)
+            const { error: updateError } = await supabase
+                .from('inventory')
+                .update({ stock: inventory.stock - item.quantity, updated_at: new Date().toISOString() })
+                .eq('id', inventory.id);
+
+            if (updateError) {
+                throw new Error(`Failed to update stock for ${item.product_id}`);
+            }
+        }
+
+        // 4. Update Status to 'in_transit'
+        const { error: finalUpdateError } = await supabase
             .from('transfers')
             .update({
                 status: 'in_transit',
@@ -58,8 +92,8 @@ export async function POST(request: Request) {
             })
             .eq('id', transfer_id);
 
-        if (updateError) {
-            throw updateError;
+        if (finalUpdateError) {
+            throw finalUpdateError;
         }
 
         return NextResponse.json({ success: true });

@@ -49,37 +49,21 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // 2. Check Stock & Deduct Inventory (Atomic-ish via loop, ideally RPC but doing in code for now)
+        // 2. Validate items (Check if they exist in origin, but don't deduct yet)
+        // Note: For a "Request" flow, the solicitor (Origin) just lists what they want.
+        // We will validate that products exist in the system.
         for (const item of items) {
-            const { data: inventory, error: stockError } = await supabase
-                .from('inventory')
-                .select('id, stock')
-                .eq('store_id', origin_store_id)
-                .eq('product_id', item.product_id)
+            const { data: product, error: pError } = await supabase
+                .from('products')
+                .select('id, name')
+                .eq('id', item.product_id)
                 .single();
 
-            if (stockError || !inventory) {
+            if (pError || !product) {
                 return NextResponse.json(
-                    { error: `Product ${item.name || item.product_id} not found in origin inventory` },
+                    { error: `Product ${item.product_id} not found` },
                     { status: 400 }
                 );
-            }
-
-            if (inventory.stock < item.quantity) {
-                return NextResponse.json(
-                    { error: `Insufficient stock for ${item.name || item.product_id}. Available: ${inventory.stock}` },
-                    { status: 400 }
-                );
-            }
-
-            // Deduct stock
-            const { error: updateError } = await supabase
-                .from('inventory')
-                .update({ stock: inventory.stock - item.quantity, updated_at: new Date().toISOString() })
-                .eq('id', inventory.id);
-
-            if (updateError) {
-                throw new Error(`Failed to update stock for ${item.product_id}`);
             }
         }
 
@@ -114,9 +98,27 @@ export async function POST(request: NextRequest) {
 
         if (itemsError) {
             console.error('Error creating transfer items:', itemsError);
-            // Note: In a real production app, we should rollback inventory changes here.
-            // For now, we assume consistency or manual fix if this rare edge case happens.
             return NextResponse.json({ error: itemsError.message }, { status: 500 });
+        }
+
+        // 5. Send Notification to Destination Store (Provider)
+        try {
+            const { data: originStore } = await supabase
+                .from('stores')
+                .select('name')
+                .eq('id', origin_store_id)
+                .single();
+
+            const title = 'Nueva Solicitud de Mercancía';
+            const body = `La sucursal ${originStore?.name || 'Origen'} solicita productos.`;
+            const url = '/inventory/transferencias';
+
+            // We use a separate background process or just wait for it here 
+            // since it's an edge function/route
+            const { sendTransferNotification } = await import('@/lib/notifications');
+            await sendTransferNotification(destination_store_id, title, body, url);
+        } catch (notifyError) {
+            console.error('Notification error (ignoring to not fail transfer):', notifyError);
         }
 
         return NextResponse.json(transfer);

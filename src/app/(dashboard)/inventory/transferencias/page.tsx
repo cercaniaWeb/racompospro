@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/atoms/Button';
 import TransferModal from '@/components/organisms/TransferModal';
+import ReceiveTransferModal from '@/components/organisms/ReceiveTransferModal';
 import { ArrowLeftRight, Plus, RefreshCw } from 'lucide-react';
 import { useProduct } from '@/hooks/useProduct';
 import { useTransfer } from '@/hooks/useTransfer';
@@ -14,9 +15,11 @@ const TransferenciasPage = () => {
   const router = useRouter();
   const { storeId } = useStoreContext();
   const { products } = useProduct();
-  const { fetchTransfers, createTransfer, updateStatus, shipTransfer, loading, error } = useTransfer();
+  const { fetchTransfers, createTransfer, updateStatus, shipTransfer, completeTransfer, loading, error } = useTransfer();
   const [transfers, setTransfers] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [showReceiveModal, setShowReceiveModal] = useState(false);
+  const [selectedTransfer, setSelectedTransfer] = useState<any | null>(null);
   const [stores, setStores] = useState<any[]>([]);
 
   // Fetch stores and transfers on mount
@@ -62,20 +65,23 @@ const TransferenciasPage = () => {
     return labels[status] || status;
   };
 
-  const handleAcceptTransfer = async (transfer: any) => {
-    console.log('[TRANSFERS PAGE] handleAcceptTransfer called for', transfer.id);
-    if (!confirm('¿Estás seguro de aceptar esta transferencia? Se actualizará el inventario.')) return;
+  const handleAcceptTransfer = (transfer: any) => {
+    setSelectedTransfer(transfer);
+    setShowReceiveModal(true);
+  };
+
+  const handleConfirmReceive = async (receivedItems: any[]) => {
+    if (!selectedTransfer) return;
+
     try {
-      console.log('[TRANSFERS PAGE] Calling updateStatus...');
-      await updateStatus(transfer.id, 'completed');
-      console.log('[TRANSFERS PAGE] updateStatus completed, refreshing list...');
-      // Manually refresh the list
+      await completeTransfer(selectedTransfer.id, receivedItems);
+
       const transfersData = await fetchTransfers();
-      console.log('[TRANSFERS PAGE] Fetched transfers:', transfersData);
       if (transfersData) setTransfers(transfersData);
+      setShowReceiveModal(false);
+      setSelectedTransfer(null);
     } catch (err) {
-      console.error('[TRANSFERS PAGE] Error accepting transfer:', err);
-      alert(`Error al aceptar transferencia: ${err}`);
+      console.error('[TRANSFERS PAGE] Error confirming receipt:', err);
     }
   };
 
@@ -126,6 +132,9 @@ const TransferenciasPage = () => {
           <p className="text-sm text-gray-400 mt-1">
             Registra y consulta movimientos de inventario entre sucursales
           </p>
+          <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            Sucursal Activa: {stores.find(s => s.id === storeId)?.name || '...'}
+          </div>
         </div>
         <Button
           variant="primary"
@@ -209,7 +218,8 @@ const TransferenciasPage = () => {
                             >
                               Cancelar
                             </Button>
-                            {storeId === transfer.origin_store_id && (
+                            {/* Provedor (Destino) es quien envía */}
+                            {storeId === transfer.destination_store_id && (
                               <Button
                                 variant="primary"
                                 className="bg-blue-600 hover:bg-blue-500"
@@ -230,7 +240,8 @@ const TransferenciasPage = () => {
                           </>
                         )}
 
-                        {transfer.status === 'in_transit' && storeId === transfer.destination_store_id && (
+                        {/* Solicitante (Origen) es quien recibe */}
+                        {transfer.status === 'in_transit' && storeId === transfer.origin_store_id && (
                           <Button
                             variant="primary"
                             className="bg-green-600 hover:bg-green-500"
@@ -257,6 +268,13 @@ const TransferenciasPage = () => {
         stores={stores}
         products={products.map(p => ({ id: p.id, name: p.name, sku: p.sku }))}
         currentStoreId={storeId}
+      />
+      <ReceiveTransferModal
+        isOpen={showReceiveModal}
+        onClose={() => setShowReceiveModal(false)}
+        onConfirm={handleConfirmReceive}
+        transfer={selectedTransfer}
+        loading={loading}
       />
     </div>
   );

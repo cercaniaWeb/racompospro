@@ -139,12 +139,13 @@ const TransferModal: React.FC<TransferModalProps> = ({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-foreground mb-2">
-                                Tienda Origen *
+                                Tienda Solicitante (Tu sucursal) *
                             </label>
                             <select
                                 value={originStore}
                                 onChange={(e) => setOriginStore(e.target.value)}
-                                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                disabled={true} // Siempre es la sucursal actual
+                                className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-md text-gray-400 cursor-not-allowed"
                             >
                                 <option value="" className="bg-gray-800 text-white">Selecciona tienda...</option>
                                 {stores.map(store => (
@@ -153,11 +154,12 @@ const TransferModal: React.FC<TransferModalProps> = ({
                                     </option>
                                 ))}
                             </select>
+                            <p className="text-[10px] text-gray-500 mt-1">Eres quien solicita la mercancía</p>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-foreground mb-2">
-                                Tienda Destino *
+                                Proveedor (A quien le pides) *
                             </label>
                             <select
                                 value={destStore}
@@ -171,6 +173,7 @@ const TransferModal: React.FC<TransferModalProps> = ({
                                     </option>
                                 ))}
                             </select>
+                            <p className="text-[10px] text-gray-500 mt-1">Sucursal que enviará los productos</p>
                         </div>
                     </div>
 

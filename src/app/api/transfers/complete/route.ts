@@ -9,8 +9,8 @@ export async function POST(request: Request) {
     );
 
     try {
-        const { transfer_id, user_id } = await request.json();
-        console.log('[TRANSFER API] Received:', { transfer_id, user_id });
+        const { transfer_id, user_id, received_items } = await request.json();
+        console.log('[TRANSFER API] Received:', { transfer_id, user_id, received_items });
 
         if (!transfer_id || !user_id) {
             console.error('[TRANSFER API] Missing required fields');
@@ -35,45 +35,51 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Transfer already completed' }, { status: 400 });
         }
 
-        // 1.5 Validate User Authorization (User must belong to destination store)
+        // Use received items if provided (from the checklist modal), fallback to transfer items
+        const itemsToProcess = received_items || transfer.items.map((item: any) => ({
+            product_id: item.product_id,
+            received_quantity: item.quantity
+        }));
+
+        // 1.5 Validate User Authorization (User must belong to ORIGIN store as they are receiving the goods)
         const { data: userStore, error: authError } = await supabase
             .from('user_stores')
             .select('id')
             .eq('user_id', user_id)
-            .eq('store_id', transfer.destination_store_id)
+            .eq('store_id', transfer.origin_store_id)
             .single();
 
         if (authError || !userStore) {
             return NextResponse.json(
-                { error: 'Unauthorized: User does not belong to destination store' },
+                { error: 'Unauthorized: User does not belong to solicitor (origin) store' },
                 { status: 403 }
             );
         }
 
-        // 2. Update inventory for each item
-        console.log('[TRANSFER API] Updating inventory for', transfer.items.length, 'items...');
-        for (const item of transfer.items) {
-            // Check if inventory record exists for destination store
+        // 2. Update inventory for each item (In Origin Store)
+        console.log('[TRANSFER API] Updating inventory for', itemsToProcess.length, 'items in ORIGIN store...');
+        for (const item of itemsToProcess) {
+            // Check if inventory record exists for origin store
             const { data: inventoryItem } = await supabase
                 .from('inventory')
                 .select('*')
-                .eq('store_id', transfer.destination_store_id)
+                .eq('store_id', transfer.origin_store_id)
                 .eq('product_id', item.product_id)
                 .single();
 
             if (inventoryItem) {
                 // Update existing inventory
-                console.log('[TRANSFER API] Updating existing inventory for product', item.product_id);
+                console.log('[TRANSFER API] Updating existing inventory in ORIGIN for product', item.product_id);
                 await supabase
                     .from('inventory')
                     .update({
-                        stock: inventoryItem.stock + item.quantity,
+                        stock: inventoryItem.stock + item.received_quantity,
                         updated_at: new Date().toISOString()
                     })
                     .eq('id', inventoryItem.id);
             } else {
                 // Create new inventory record
-                console.log('[TRANSFER API] Creating new inventory record for product', item.product_id);
+                console.log('[TRANSFER API] Creating new inventory record in ORIGIN for product', item.product_id);
                 const { data: product } = await supabase
                     .from('products')
                     .select('min_stock')
@@ -83,9 +89,9 @@ export async function POST(request: Request) {
                 await supabase
                     .from('inventory')
                     .insert({
-                        store_id: transfer.destination_store_id,
+                        store_id: transfer.origin_store_id,
                         product_id: item.product_id,
-                        stock: item.quantity,
+                        stock: item.received_quantity,
                         min_stock: product?.min_stock || 0,
                         is_active: true
                     });

@@ -115,7 +115,7 @@ export function useStoreContext(): StoreContext {
         }
 
         fetchStoreContext();
-    }, []);
+    }, [supabase.auth]);
 
     return context;
 }
