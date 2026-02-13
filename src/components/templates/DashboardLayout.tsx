@@ -5,7 +5,7 @@ import Header from '@/components/organisms/Header';
 import Sidebar from '@/components/organisms/Sidebar';
 
 import { supabase } from '@/lib/supabase/client';
-import { useNotifications } from '@/store/notificationStore';
+import { useNotifications, useNotificationStore } from '@/store/notificationStore';
 import { Bell } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -45,53 +45,70 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   // Global Realtime Notifications
   React.useEffect(() => {
-    const currentStoreId = typeof window !== 'undefined' ? localStorage.getItem('current_store_id') : null;
-
     const channel = supabase
       .channel('global_notifications')
       .on(
         'postgres_changes',
         {
-          event: '*', // Escuchar todo: INSERT, UPDATE, DELETE
+          event: '*',
           schema: 'public',
           table: 'transfers'
         },
         async (payload) => {
-          console.log('[REALTIME] Cambio en transferencia:', payload);
+          console.log('[REALTIME EVENT]', payload);
           const newTransfer = payload.new as any;
           const oldTransfer = payload.old as any;
 
+          const dynamicStoreId = typeof window !== 'undefined' ? localStorage.getItem('current_store_id') : null;
+          if (!dynamicStoreId) return;
+
+          const store = useNotificationStore.getState();
+
           // 1. NUEVA SOLICITUD (INSERT) -> Notificar al Proveedor (Destino)
-          if (payload.eventType === 'INSERT' && currentStoreId === newTransfer.destination_store_id) {
+          if (payload.eventType === 'INSERT' && dynamicStoreId === newTransfer.destination_store_id) {
             const { data: origin } = await supabase.from('stores').select('name').eq('id', newTransfer.origin_store_id).single();
-            notify.info('Nueva Solicitud', `La sucursal ${origin?.name || 'Origen'} solicita productos.`);
+            store.addNotification({
+              type: 'info',
+              title: 'Nueva Solicitud',
+              message: `La sucursal ${origin?.name || 'Origen'} solicita productos.`
+            });
           }
 
-          // 2. PEDIDO ENVIADO (UPDATE status: pending -> in_transit) -> Notificar al Solicitante (Origen)
+          // 2. PEDIDO ENVIADO (UPDATE) -> Notificar al Solicitante (Origen)
           if (payload.eventType === 'UPDATE' &&
             newTransfer.status === 'in_transit' &&
-            oldTransfer?.status === 'pending' &&
-            currentStoreId === newTransfer.origin_store_id) {
+            (oldTransfer?.status === 'pending' || !oldTransfer) &&
+            dynamicStoreId === newTransfer.origin_store_id) {
             const { data: dest } = await supabase.from('stores').select('name').eq('id', newTransfer.destination_store_id).single();
-            notify.success('Mercancía en Camino', `Tu pedido ha sido enviado por ${dest?.name || 'Proveedor'}.`);
+            store.addNotification({
+              type: 'success',
+              title: 'Mercancía en Camino',
+              message: `Tu pedido ha sido enviado por ${dest?.name || 'Proveedor'}.`
+            });
           }
 
-          // 3. PEDIDO RECIBIDO (UPDATE status: in_transit -> completed) -> Notificar al Proveedor (Destino)
+          // 3. PEDIDO RECIBIDO (UPDATE) -> Notificar al Proveedor (Destino)
           if (payload.eventType === 'UPDATE' &&
             newTransfer.status === 'completed' &&
-            oldTransfer?.status === 'in_transit' &&
-            currentStoreId === newTransfer.destination_store_id) {
+            (oldTransfer?.status === 'in_transit' || !oldTransfer) &&
+            dynamicStoreId === newTransfer.destination_store_id) {
             const { data: origin } = await supabase.from('stores').select('name').eq('id', newTransfer.origin_store_id).single();
-            notify.success('Transferencia Completada', `${origin?.name || 'La sucursal'} ha recibido la mercancía.`);
+            store.addNotification({
+              type: 'success',
+              title: 'Transferencia Completada',
+              message: `${origin?.name || 'La sucursal'} ha recibido la mercancía.`
+            });
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('[REALTIME STATUS]', status);
+      });
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [notify]);
+  }, []); // Singleton effect
 
   return (
     <div className="flex h-screen bg-background">
