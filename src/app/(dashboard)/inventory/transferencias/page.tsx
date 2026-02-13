@@ -132,9 +132,6 @@ const TransferenciasPage = () => {
           <p className="text-sm text-gray-400 mt-1">
             Registra y consulta movimientos de inventario entre sucursales
           </p>
-          <div className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            Sucursal Activa: {stores.find(s => s.id === storeId)?.name || '...'}
-          </div>
         </div>
         <Button
           variant="primary"

@@ -9,6 +9,8 @@ import { useModal } from '@/hooks/useModal';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import UserProfileModal from '@/components/organisms/UserProfileModal';
+import { useStoreContext } from '@/hooks/useStoreContext';
+import { Store } from 'lucide-react';
 
 interface HeaderProps {
   user?: {
@@ -32,6 +34,7 @@ const Header: React.FC<HeaderProps> = ({
   const { unreadCount, history, markAsRead, clearHistory } = useNotificationStore();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const { storeName } = useStoreContext();
   const unread = unreadCount();
 
   const { modalRef, handleBackdropClick } = useModal({
@@ -107,7 +110,12 @@ const Header: React.FC<HeaderProps> = ({
                   onClick={() => setShowProfileModal(true)}
                 >
                   <Text variant="sm" className="font-medium text-foreground">{user.name}</Text>
-                  <Text variant="xs" className="text-muted-foreground capitalize">{user.status}</Text>
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 mt-0.5 rounded-full bg-blue-500/10 border border-blue-500/20">
+                    <Store size={10} className="text-blue-400" />
+                    <span className="text-[10px] font-bold text-blue-400 whitespace-nowrap uppercase">
+                      {storeName || 'Cargando...'}
+                    </span>
+                  </div>
                 </div>
                 <div
                   className="cursor-pointer hover:opacity-80 transition-opacity"
