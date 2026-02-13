@@ -52,27 +52,37 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*', // Escuchar todo: INSERT, UPDATE, DELETE
           schema: 'public',
           table: 'transfers'
         },
         async (payload) => {
-          console.log('[REALTIME] New transfer detected:', payload);
-          const newTransfer = payload.new;
+          console.log('[REALTIME] Cambio en transferencia:', payload);
+          const newTransfer = payload.new as any;
+          const oldTransfer = payload.old as any;
 
-          // Only notify if it's for MY store
-          if (currentStoreId && newTransfer.destination_store_id === currentStoreId) {
-            // Fetch origin store name for a better message
-            const { data: origin } = await supabase
-              .from('stores')
-              .select('name')
-              .eq('id', newTransfer.origin_store_id)
-              .single();
+          // 1. NUEVA SOLICITUD (INSERT) -> Notificar al Proveedor (Destino)
+          if (payload.eventType === 'INSERT' && currentStoreId === newTransfer.destination_store_id) {
+            const { data: origin } = await supabase.from('stores').select('name').eq('id', newTransfer.origin_store_id).single();
+            notify.info('Nueva Solicitud', `La sucursal ${origin?.name || 'Origen'} solicita productos.`);
+          }
 
-            notify.info(
-              'Solicitud de Mercancía',
-              `La sucursal ${origin?.name || 'Origen'} solicita productos.`
-            );
+          // 2. PEDIDO ENVIADO (UPDATE status: pending -> in_transit) -> Notificar al Solicitante (Origen)
+          if (payload.eventType === 'UPDATE' &&
+            newTransfer.status === 'in_transit' &&
+            oldTransfer?.status === 'pending' &&
+            currentStoreId === newTransfer.origin_store_id) {
+            const { data: dest } = await supabase.from('stores').select('name').eq('id', newTransfer.destination_store_id).single();
+            notify.success('Mercancía en Camino', `Tu pedido ha sido enviado por ${dest?.name || 'Proveedor'}.`);
+          }
+
+          // 3. PEDIDO RECIBIDO (UPDATE status: in_transit -> completed) -> Notificar al Proveedor (Destino)
+          if (payload.eventType === 'UPDATE' &&
+            newTransfer.status === 'completed' &&
+            oldTransfer?.status === 'in_transit' &&
+            currentStoreId === newTransfer.destination_store_id) {
+            const { data: origin } = await supabase.from('stores').select('name').eq('id', newTransfer.origin_store_id).single();
+            notify.success('Transferencia Completada', `${origin?.name || 'La sucursal'} ha recibido la mercancía.`);
           }
         }
       )

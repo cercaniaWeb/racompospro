@@ -96,6 +96,24 @@ export async function POST(request: Request) {
             throw finalUpdateError;
         }
 
+        // 5. Send Notification to Origin Store (Solicitor)
+        try {
+            const { data: destStore } = await supabase
+                .from('stores')
+                .select('name')
+                .eq('id', transfer.destination_store_id)
+                .single();
+
+            const title = 'Mercancía en Camino';
+            const body = `La sucursal ${destStore?.name || 'Proveedor'} ha enviado tu pedido.`;
+            const url = '/inventory/transferencias';
+
+            const { sendTransferNotification } = await import('@/lib/notifications');
+            await sendTransferNotification(transfer.origin_store_id, title, body, url);
+        } catch (notifyError) {
+            console.error('Notification error (ignoring):', notifyError);
+        }
+
         return NextResponse.json({ success: true });
 
     } catch (error: any) {
