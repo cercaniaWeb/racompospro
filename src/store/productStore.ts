@@ -44,7 +44,6 @@ export const useProductStore = create<ProductState>((set) => ({
       // 1. Crear el producto
       // Extract batch fields and other non-schema fields
       // We explicitly exclude fields that don't belong to the 'products' table
-      // @ts-ignore
       const { 
         batch_number, 
         expiry_date, 
@@ -57,7 +56,7 @@ export const useProductStore = create<ProductState>((set) => ({
         is_batch_tracked,
         is_weighted,
         ...rest 
-      } = productData;
+      } = productData as any;
 
       const { data, error } = await supabase
         .from('products')

@@ -376,6 +376,7 @@ const NewProductPage = () => {
                     </button>
                   </div>
                   <InputField
+                    label="URL de imagen"
                     placeholder="O pega una URL directa"
                     value={imageUrl}
                     onChange={(e) => {
