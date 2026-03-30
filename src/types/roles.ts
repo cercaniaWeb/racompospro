@@ -17,6 +17,23 @@ export const ROLE_LABELS: Record<UserRole, string> = {
 };
 
 /**
+ * Normaliza un rol string a un tipo UserRole válido
+ * Soporta alias comunes como 'cajera', 'gerente', 'dev', etc.
+ */
+export function normalizeRole(rawRole: any): UserRole {
+    if (!rawRole) return 'admin'; // Default for the project setup
+    
+    const role = String(rawRole).toLowerCase();
+    
+    if (role === 'admin' || role === 'dev' || role === 'owner') return 'admin';
+    if (role === 'gerente' || role === 'grte' || role === 'manager') return 'grte';
+    if (role === 'cajera' || role === 'cajero' || role === 'staff' || role === 'user') return 'cajero';
+    
+    return 'cajero'; // Safe default for unknown roles
+}
+
+
+/**
  * Definición de permisos por rol
  */
 export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
@@ -59,6 +76,7 @@ export const PROTECTED_ROUTES: Record<string, UserRole[]> = {
     '/expenses': ['admin', 'grte'],
     '/customers': ['admin', 'grte'],
     '/pos': ['admin', 'grte', 'cajero'],
+    '/categories': ['admin', 'grte'],
     '/debug': ['admin'],
 };
 

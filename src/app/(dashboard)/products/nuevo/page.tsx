@@ -1,18 +1,20 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InputField from '@/components/molecules/InputField';
 import Button from '@/components/atoms/Button';
 import { useProduct } from '@/hooks/useProduct';
 import { useAuth } from '@/hooks/useAuth';
 import { useStoreContext } from '@/hooks/useStoreContext';
 import { supabase } from '@/lib/supabase/client';
-import { Check } from 'lucide-react';
+import { Check, Tag } from 'lucide-react';
+import { Category } from '@/lib/supabase/types';
 
 const NewProductPage = () => {
   const { addProduct, error } = useProduct();
   const { user } = useAuth();
   const { storeId: contextStoreId, storeName } = useStoreContext();
+  
   const [successMsg, setSuccessMsg] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -21,6 +23,7 @@ const NewProductPage = () => {
   const [sku, setSku] = useState('');
   const [barcode, setBarcode] = useState('');
   const [category, setCategory] = useState('');
+  const [categoryId, setCategoryId] = useState('');
   const [stock, setStock] = useState('');
   const [minStock, setMinStock] = useState('');
   const [isBatchTracked, setIsBatchTracked] = useState(false);
@@ -29,9 +32,31 @@ const NewProductPage = () => {
   const [isWeighted, setIsWeighted] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState('');
+  
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
   // Resolve store_id: prefer user metadata, then storeContext, then localStorage
   const resolvedStoreId = user?.store_id || contextStoreId || (typeof window !== 'undefined' ? localStorage.getItem('current_store_id') : null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const { data, error } = await supabase
+          .from('categories')
+          .select('*')
+          .order('name');
+        if (error) throw error;
+        setCategories(data || []);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,22 +77,18 @@ const NewProductPage = () => {
         sku,
         barcode,
         category,
+        category_id: categoryId || undefined,
         stock: parseInt(stock),
         min_stock: parseInt(minStock),
         is_active: true,
         is_weighted: isWeighted,
         measurement_unit: isWeighted ? 'kg' : 'unit',
-        // @ts-ignore
         image_url: imageUrl,
-        // @ts-ignore
         is_batch_tracked: isBatchTracked,
-        // @ts-ignore
         batch_number: isBatchTracked ? batchNumber : undefined,
-        // @ts-ignore
         expiry_date: isBatchTracked ? expiryDate : undefined,
-      }, resolvedStoreId);
+      } as any, resolvedStoreId);
 
-      // Reset form
       setName('');
       setDescription('');
       setPrice('');
@@ -75,6 +96,7 @@ const NewProductPage = () => {
       setSku('');
       setBarcode('');
       setCategory('');
+      setCategoryId('');
       setStock('');
       setMinStock('');
       setIsWeighted(false);
@@ -82,114 +104,145 @@ const NewProductPage = () => {
       setBatchNumber('');
       setExpiryDate('');
       setImage(null);
+      setImageUrl('');
 
-      setSuccessMsg(`Producto "${name}" creado exitosamente${storeName ? ` y asignado a ${storeName}` : ''}.`);
-      console.log('Product created successfully, storeId:', resolvedStoreId);
+      setSuccessMsg(`Producto "${name}" creado exitosamente.`);
     } catch (err) {
       console.error('Error creating product:', err);
     }
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Nuevo Producto</h1>
-        <p className="text-muted-foreground">
+    <div className="max-w-5xl mx-auto py-8 px-4">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-white mb-2">Nuevo Producto</h1>
+        <p className="text-gray-400">
           Añadir un nuevo producto al inventario
-          {storeName && <span className="ml-1 text-primary font-medium">→ {storeName}</span>}
+          {storeName && <span className="ml-2 text-blue-400 font-medium bg-blue-400/10 px-2 py-1 rounded-full text-xs">→ {storeName}</span>}
         </p>
       </div>
 
-      <div className="glass rounded-xl border border-white/10 shadow p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {successMsg && (
-            <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded">
-              <Check className="w-4 h-4 shrink-0" />
-              {successMsg}
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {successMsg && (
+          <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/20 text-green-400 p-4 rounded-xl">
+            <div className="bg-green-500/20 p-2 rounded-full">
+              <Check className="w-5 h-5" />
             </div>
-          )}
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded">
-              Error: {error}
-            </div>
-          )}
+            <p className="font-medium">{successMsg}</p>
+          </div>
+        )}
+        
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl">
+            <p className="font-medium">Error: {error}</p>
+          </div>
+        )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Información General */}
+          <div className="space-y-6 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm shadow-xl">
+            <h2 className="text-xl font-semibold text-white/90 border-b border-white/10 pb-4">Información General</h2>
+            
+            <InputField
+              id="name"
+              label="Nombre del Producto"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              placeholder="Nombre del producto"
+              className="bg-white/5 border-white/10"
+            />
+
+            <InputField
+              id="description"
+              label="Descripción"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Descripción del producto"
+              className="bg-white/5 border-white/10"
+            />
+
+            <div className="grid grid-cols-2 gap-4">
               <InputField
-                id="name"
-                label="Nombre del Producto"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                id="price"
+                label="Precio de Venta"
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
                 required
-                placeholder="Nombre del producto"
+                placeholder="0.00"
+                step="0.01"
+                className="bg-white/5 border-white/10"
               />
 
               <InputField
-                id="description"
-                label="Descripción"
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Descripción del producto"
+                id="cost"
+                label="Costo"
+                type="number"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                required
+                placeholder="0.00"
+                step="0.01"
+                className="bg-white/5 border-white/10"
               />
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <InputField
-                  id="price"
-                  label="Precio de Venta"
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  required
-                  placeholder="0.00"
-                  step="0.01"
-                />
-
-                <InputField
-                  id="cost"
-                  label="Costo"
-                  type="number"
-                  value={cost}
-                  onChange={(e) => setCost(e.target.value)}
-                  required
-                  placeholder="0.00"
-                  step="0.01"
-                />
-              </div>
-
+            <div className="grid grid-cols-2 gap-4">
               <InputField
                 id="sku"
                 label="SKU"
                 type="text"
                 value={sku}
                 onChange={(e) => setSku(e.target.value)}
-                required
                 placeholder="Código SKU único"
+                className="bg-white/5 border-white/10"
               />
-            </div>
 
-            <div>
               <InputField
                 id="barcode"
                 label="Código de Barras"
                 type="text"
                 value={barcode}
                 onChange={(e) => setBarcode(e.target.value)}
-                required
-                placeholder="Código de barras UPC/EAN"
+                placeholder="Código EAN/UPC"
+                className="bg-white/5 border-white/10"
               />
+            </div>
+          </div>
 
-              <InputField
-                id="category"
-                label="Categoría"
-                type="text"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                required
-                placeholder="Categoría del producto"
-              />
+          {/* Inventario y Categoría */}
+          <div className="space-y-6">
+            <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm shadow-xl space-y-6">
+              <h2 className="text-xl font-semibold text-white/90 border-b border-white/10 pb-4">Inventario</h2>
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-400 mb-2">
+                  Categoría
+                </label>
+                <div className="relative group">
+                  <select
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all appearance-none cursor-pointer group-hover:border-white/20"
+                    value={categoryId}
+                    onChange={(e) => {
+                      const id = e.target.value;
+                      setCategoryId(id);
+                      const cat = categories.find(c => c.id === id);
+                      if (cat) setCategory(cat.name);
+                    }}
+                  >
+                    <option value="" className="bg-gray-900">Seleccionar categoría...</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id} className="bg-gray-900">
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Tag className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none group-hover:text-blue-400 transition-colors" size={18} />
+                </div>
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <InputField
@@ -200,6 +253,7 @@ const NewProductPage = () => {
                   onChange={(e) => setStock(e.target.value)}
                   required
                   placeholder="0"
+                  className="bg-white/5 border-white/10"
                 />
 
                 <InputField
@@ -208,166 +262,152 @@ const NewProductPage = () => {
                   type="number"
                   value={minStock}
                   onChange={(e) => setMinStock(e.target.value)}
-                  required
                   placeholder="0"
+                  className="bg-white/5 border-white/10"
                 />
               </div>
 
-              <div className="mt-4 space-y-4">
-                <label className="flex items-center space-x-3 p-4 border border-white/10 rounded-lg bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+              <div className="space-y-4 pt-4 border-t border-white/10">
+                <label className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={isWeighted}
                     onChange={(e) => setIsWeighted(e.target.checked)}
-                    className="h-5 w-5 text-primary focus:ring-primary border-white/20 bg-black/20 rounded"
+                    className="w-5 h-5 rounded border-white/20 bg-white/10 text-blue-500 focus:ring-blue-500/50"
                   />
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-foreground">Venta a Granel / Por Peso</span>
-                    <span className="text-xs text-muted-foreground">Habilitar para usar con la báscula (Kg)</span>
+                    <span className="text-sm font-medium text-white group-hover:text-blue-400 transition-colors">Venta por Peso (granel)</span>
+                    <span className="text-xs text-gray-400">El producto se vende por Kg en lugar de unidades</span>
                   </div>
                 </label>
 
-                <label className="flex items-center space-x-3 p-4 border border-white/10 rounded-lg bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                <label className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={isBatchTracked}
                     onChange={(e) => setIsBatchTracked(e.target.checked)}
-                    className="h-5 w-5 text-primary focus:ring-primary border-white/20 bg-black/20 rounded"
+                    className="w-5 h-5 rounded border-white/20 bg-white/10 text-blue-500 focus:ring-blue-500/50"
                   />
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-foreground">Controlar por Lotes / Caducidad</span>
-                    <span className="text-xs text-muted-foreground">Habilitar para productos perecederos</span>
+                    <span className="text-sm font-medium text-white group-hover:text-blue-400 transition-colors">Lotes y Caducidad</span>
+                    <span className="text-xs text-gray-400">Seguimiento de fechas de vencimiento</span>
                   </div>
                 </label>
 
                 {isBatchTracked && (
-                  <div className="grid grid-cols-2 gap-4 p-4 bg-white/5 rounded-lg border border-white/10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-xl bg-blue-500/5 border border-blue-500/20 animate-in fade-in slide-in-from-top-2 duration-300">
                     <InputField
-                      label="Número de Lote Inicial"
+                      label="Nº de Lote"
                       value={batchNumber}
                       onChange={(e) => setBatchNumber(e.target.value)}
-                      placeholder="Ej. LOTE-001"
+                      placeholder="LOTE-001"
+                      className="bg-transparent"
                     />
                     <InputField
-                      label="Fecha de Caducidad"
+                      label="Caducidad"
                       type="date"
                       value={expiryDate}
                       onChange={(e) => setExpiryDate(e.target.value)}
+                      className="bg-transparent"
                     />
                   </div>
                 )}
               </div>
+            </div>
 
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-muted-foreground mb-1">
-                  Imagen del Producto
-                </label>
-
-                <div className="flex items-start gap-4">
-                  <div className="w-32 h-32 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative group">
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt="Preview"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-muted-foreground text-xs text-center p-2">Sin imagen</span>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col gap-2 flex-1">
-                    <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-white/10 border-dashed rounded-md hover:border-primary/50 transition-colors">
-                      <div className="space-y-1 text-center">
-                        <div className="flex text-sm text-muted-foreground justify-center">
-                          <label htmlFor="file-upload" className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary/80">
-                            <span>Seleccionar archivo</span>
-                            <input
-                              id="file-upload"
-                              name="file-upload"
-                              type="file"
-                              className="sr-only"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                  setImage(file);
-                                  // Create a fake local URL for preview
-                                  setImageUrl(URL.createObjectURL(file));
-                                }
-                              }}
-                            />
-                          </label>
-                          <p className="pl-1">o arrastrar y soltar</p>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          PNG, JPG, GIF hasta 10MB
-                        </p>
-                      </div>
+            {/* Imagen Section */}
+            <div className="bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm shadow-xl">
+              <h2 className="text-xl font-semibold text-white/90 mb-6 flex items-center gap-2">
+                Imagen
+                <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full uppercase tracking-wider">Opcional</span>
+              </h2>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <div className="w-32 h-32 rounded-2xl border-2 border-white/10 bg-white/5 overflow-hidden flex items-center justify-center shrink-0">
+                  {imageUrl ? (
+                    <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-gray-500 flex flex-col items-center gap-1">
+                      <Tag size={24} className="opacity-20" />
+                      <span className="text-[10px] font-medium uppercase tracking-tight">Sin Imagen</span>
                     </div>
+                  )}
+                </div>
 
-                    <Button
+                <div className="flex flex-col gap-3 w-full">
+                  <div className="flex gap-2">
+                    <label className="flex-1 px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 transition-all text-sm font-medium text-center cursor-pointer text-white">
+                      Subir archivo
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setImage(file);
+                            setImageUrl(URL.createObjectURL(file));
+                          }
+                        }}
+                      />
+                    </label>
+                    <button
                       type="button"
-                      variant="secondary"
-                      size="sm"
                       onClick={async () => {
                         if (!name) return alert('Ingresa un nombre primero');
                         try {
-                          // Import supabase client dynamically or ensure it's imported at top
-                          const { supabase } = await import('@/lib/supabase/client');
-
-                          console.log('Invoking search-product-image with query:', `${name} ${barcode || ''}`);
-                          console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
-
                           const { data, error } = await supabase.functions.invoke('search-product-image', {
                             body: { query: `${name} ${barcode || ''}` },
-                            headers: {
-                              Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`
-                            }
                           });
-
                           if (error) throw error;
                           if (data?.imageUrl) {
                             setImageUrl(data.imageUrl);
-                            setImage(null); // Clear file if we use URL
+                            setImage(null);
                           } else {
-                            alert('No se encontró ninguna imagen');
+                            alert('No se encontró imagen');
                           }
-                        } catch (err: any) {
-                          console.error('Full Error:', err);
-                          // Try to parse response body from error if available
-                          if (err.context && err.context.json) {
-                            err.context.json().then((body: any) => {
-                              console.error('Error Body:', body);
-                              alert(`Error: ${body.error || 'Desconocido'} \n ${JSON.stringify(body.googleResponse || {}, null, 2)}`);
-                            });
-                          } else {
-                            alert('Error al buscar imagen. Revisa la consola para más detalles.');
-                          }
+                        } catch (err) {
+                          console.error(err);
+                          alert('Error al buscar imagen');
                         }
                       }}
+                      className="px-4 py-2.5 rounded-xl bg-blue-500/20 border border-blue-500/20 hover:bg-blue-500/30 transition-all text-sm font-medium text-blue-400 flex items-center gap-2"
                     >
-                      ✨ Auto-generar Imagen
-                    </Button>
+                      ✨ IA Search
+                    </button>
                   </div>
+                  <InputField
+                    placeholder="O pega una URL directa"
+                    value={imageUrl}
+                    onChange={(e) => {
+                      setImageUrl(e.target.value);
+                      setImage(null);
+                    }}
+                    className="text-xs py-2 bg-transparent"
+                  />
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="flex justify-end space-x-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => window.history.back()}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" variant="primary">
-              Crear Producto
-            </Button>
-          </div>
-        </form>
-      </div>
+        <div className="flex items-center justify-end gap-4 pt-8 border-t border-white/10">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => window.history.back()}
+            className="px-8 bg-transparent hover:bg-white/5 border-white/10"
+          >
+            Cancelar
+          </Button>
+          <Button 
+            type="submit" 
+            variant="primary"
+            className="px-8 shadow-lg shadow-blue-500/20 bg-blue-600 hover:bg-blue-500 py-3 rounded-xl"
+          >
+            {successMsg ? 'Crear Otro Producto' : 'Crear Producto'}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

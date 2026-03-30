@@ -5,6 +5,8 @@ import Button from '@/components/atoms/Button';
 import InputField from '@/components/molecules/InputField';
 import { User } from '@/lib/supabase/types';
 import { useStores } from '@/hooks/useStores';
+import { UserRole, normalizeRole as normalizeUserRole } from '@/types/roles';
+
 
 interface UserFormModalProps {
     isOpen: boolean;
@@ -19,7 +21,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSubmit
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        role: 'cajera' as 'admin' | 'gerente' | 'cajera' | 'dev' | 'staff',
+        role: 'cajero' as UserRole,
         status: 'pending' as 'active' | 'inactive' | 'pending',
         store_id: '' as string | undefined
     });
@@ -34,16 +36,10 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSubmit
 
     useEffect(() => {
         if (user && mode === 'edit') {
-            const normalizeRole = (r: string) => {
-                if (r === 'cajero') return 'cajera';
-                if (r === 'grte') return 'gerente';
-                return r;
-            };
-
             setFormData({
                 name: user.name,
                 email: user.email,
-                role: normalizeRole(user.role as string) as any,
+                role: normalizeUserRole(user.role),
                 status: user.status,
                 store_id: (user as any).store_id || ''
             });
@@ -51,7 +47,7 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSubmit
             setFormData({
                 name: '',
                 email: '',
-                role: 'cajera',
+                role: 'cajero',
                 status: 'pending',
                 store_id: ''
             });
@@ -142,11 +138,9 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ isOpen, onClose, onSubmit
                             className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                             required
                         >
-                            <option value="cajera" className="bg-gray-800">Cajera</option>
-                            <option value="gerente" className="bg-gray-800">Gerente</option>
+                            <option value="cajero" className="bg-gray-800">Cajero</option>
+                            <option value="grte" className="bg-gray-800">Gerente</option>
                             <option value="admin" className="bg-gray-800">Administrador</option>
-                            <option value="dev" className="bg-gray-800">Desarrollador</option>
-                            <option value="staff" className="bg-gray-800">Staff</option>
                         </select>
                     </div>
 

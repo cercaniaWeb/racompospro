@@ -52,7 +52,7 @@ const ProductsPage = () => {
   }, [currentStoreId, fetchInventory]);
 
   // Combine products with inventory using the pricing utility
-  const productsWithPricing = React.useMemo(() => calculateProductsPricing(products, inventory), [products, inventory]);
+  const productsWithPricing = React.useMemo(() => calculateProductsPricing(products, inventory, currentStoreId), [products, inventory, currentStoreId]);
 
   // Filter to show only products that have inventory in this store AND match search query
   const storeProducts = productsWithPricing.filter(p => {
@@ -167,6 +167,7 @@ const ProductsPage = () => {
           category: p.category,
           barcode: p.barcode,
           sku: p.sku,
+          measurement_unit: p.measurement_unit,
           // Add custom action for price editing
           onPriceEdit: () => handleEditPrice(p),
           hasCustomPrice: p.inventory?.custom_selling_price !== null && p.inventory?.custom_selling_price !== undefined,

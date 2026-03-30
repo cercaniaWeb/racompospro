@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase/client';
 import { User } from '@/lib/supabase/types';
+import { normalizeRole } from '@/types/roles';
+
 
 interface AuthState {
   user: User | null;
@@ -40,7 +42,7 @@ export const useAuthStore = create<AuthState>((set) => ({
               email: authUser.email || '',
               name: authUser.user_metadata?.name || authUser.email || 'Usuario',
               imageUrl: authUser.user_metadata?.avatar_url,
-              role: authUser.user_metadata?.role || 'admin',
+              role: normalizeRole(authUser.user_metadata?.role),
               status: authUser.user_metadata?.status || 'active',
               created_at: authUser.created_at || new Date().toISOString(),
               updated_at: new Date().toISOString()
@@ -115,7 +117,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             email: authUser.email || '',
             name: authUser.user_metadata?.name || authUser.email || 'Usuario',
             imageUrl: authUser.user_metadata?.avatar_url,
-            role: authUser.user_metadata?.role || 'admin',
+            role: normalizeRole(authUser.user_metadata?.role),
             status: authUser.user_metadata?.status || 'active',
             created_at: authUser.created_at || new Date().toISOString(),
             updated_at: new Date().toISOString()

@@ -53,13 +53,13 @@ export default function AuthCallbackPage() {
                         const user = useAuthStore.getState().user;
                         console.log('👤 User role:', user?.role);
 
-                        if (user?.role === 'cajera') {
-                            console.log('➡️ Redirecting cashier to POS');
-                            router.push('/pos');
-                        } else {
-                            console.log('➡️ Redirecting admin/manager to dashboard');
-                            router.push('/dashboard');
-                        }
+                    if (user?.role === 'cajero') {
+                        console.log('➡️ Redirecting cashier to POS');
+                        router.push('/pos');
+                    } else {
+                        console.log('➡️ Redirecting admin/manager to dashboard');
+                        router.push('/dashboard');
+                    }
                         return;
                     }
                 }
@@ -81,7 +81,7 @@ export default function AuthCallbackPage() {
                     const user = useAuthStore.getState().user;
                     console.log('👤 User role:', user?.role);
 
-                    if (user?.role === 'cajera') {
+                    if (user?.role === 'cajero') {
                         console.log('➡️ Redirecting cashier to POS');
                         router.push('/pos');
                     } else {

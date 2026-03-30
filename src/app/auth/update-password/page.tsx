@@ -43,7 +43,7 @@ export default function UpdatePasswordPage() {
             await initialize();
             const user = useAuthStore.getState().user;
 
-            if (user?.role === 'cajera') {
+            if (user?.role === 'cajero') {
                 router.push('/pos');
             } else {
                 router.push('/dashboard');

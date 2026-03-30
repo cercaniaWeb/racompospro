@@ -11,7 +11,9 @@ interface ProductCardProps {
   price: number;
   image?: string;
   stock?: number;
+  stockTotal?: number;
   category?: string;
+  measurement_unit?: string;
   onAddToCart?: () => void;
   onEdit?: () => void;
   onClick?: () => void;
@@ -24,7 +26,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   price,
   image,
   stock,
+  stockTotal,
   category,
+  measurement_unit,
   onAddToCart,
   onEdit,
   onClick,
@@ -100,15 +104,30 @@ const ProductCard: React.FC<ProductCardProps> = ({
           )}
         </div>
 
-        <Text variant="body" className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 mb-4">
-          {formattedPrice}
-        </Text>
+        <div className="flex items-baseline gap-1 mb-4">
+          <Text variant="body" className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">
+            {formattedPrice}
+          </Text>
+          {measurement_unit && (
+            <span className="text-sm font-medium text-white/40 uppercase tracking-tighter">
+              / {measurement_unit === 'unit' ? 'pza' : measurement_unit}
+            </span>
+          )}
+        </div>
 
         {stock !== undefined && (
           <div className="mb-5 space-y-2">
-            <div className="flex justify-between text-xs uppercase tracking-wider font-medium text-white/50">
-              <span>Stock Available</span>
-              <span>{stock}</span>
+            <div className="flex justify-between text-[10px] uppercase tracking-widest font-bold">
+              <div className="flex items-center gap-1.5">
+                <span className="text-white/40">S:</span>
+                <span className="text-white">{stock} {measurement_unit === 'unit' ? 'pzas' : measurement_unit}</span>
+              </div>
+              {stockTotal !== undefined && stockTotal !== stock && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-white/20">Global:</span>
+                  <span className="text-white/40">{stockTotal}</span>
+                </div>
+              )}
             </div>
             <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
               <div

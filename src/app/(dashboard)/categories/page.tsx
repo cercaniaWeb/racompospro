@@ -125,18 +125,19 @@ const CategoriesPage = () => {
     const getCategoryTree = () => {
         if (searchQuery) return filteredCategories;
 
-        const parents = categories.filter(c => !c.parent_id);
         const tree: any[] = [];
-
-        parents.forEach(parent => {
-            tree.push({ ...parent, level: 0 });
-            const children = categories.filter(c => c.parent_id === parent.id);
+        
+        const buildTree = (parentId: string | null = null, level = 0) => {
+            const children = categories.filter(c => c.parent_id === parentId);
             children.forEach(child => {
-                tree.push({ ...child, level: 1 });
+                tree.push({ ...child, level });
+                buildTree(child.id, level + 1);
             });
-        });
+        };
 
-        // Add orphans (if any logic error or data issue)
+        buildTree(null, 0);
+
+        // Add orphans (if any logic error or data issue - parent_id set to something deleted)
         const processedIds = new Set(tree.map(c => c.id));
         const orphans = categories.filter(c => !processedIds.has(c.id));
         orphans.forEach(orphan => tree.push({ ...orphan, level: 0 }));
@@ -269,7 +270,7 @@ const CategoriesPage = () => {
                                     >
                                         <option value="">Ninguna (Categoría Principal)</option>
                                         {categories
-                                            .filter(c => c.id !== editingCategory?.id && !c.parent_id) // Prevent self-parenting and only show top-level as parents for now (1 level depth)
+                                            .filter(c => c.id !== editingCategory?.id) // Prevent self-parenting
                                             .map(c => (
                                                 <option key={c.id} value={c.id}>
                                                     {c.name}

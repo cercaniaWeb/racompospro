@@ -43,13 +43,28 @@ export const useProductStore = create<ProductState>((set) => ({
     try {
       // 1. Crear el producto
       // Extract batch fields and other non-schema fields
+      // We explicitly exclude fields that don't belong to the 'products' table
       // @ts-ignore
-      const { batch_number, expiry_date, is_active, selling_price, measurement_unit, ...rest } = productData;
+      const { 
+        batch_number, 
+        expiry_date, 
+        is_active, 
+        selling_price, 
+        measurement_unit,
+        stock,
+        category,
+        cost_price,
+        is_batch_tracked,
+        is_weighted,
+        ...rest 
+      } = productData;
 
       const { data, error } = await supabase
         .from('products')
         .insert([{
           ...rest,
+          is_batch_tracked: !!productData.is_batch_tracked,
+          is_weighted: !!productData.is_weighted,
           // Map measurement_unit to unit
           // @ts-ignore
           unit: measurement_unit || 'unit',

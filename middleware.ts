@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
-import { PROTECTED_ROUTES, canAccessRoute, UserRole } from './src/types/roles';
+import { PROTECTED_ROUTES, canAccessRoute, UserRole, normalizeRole } from './src/types/roles';
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -26,10 +26,11 @@ export async function middleware(request: NextRequest) {
         }
 
         // Obtener rol del usuario desde metadata o DB
-        let userRole: UserRole = 'cajero'; // Default
-
-        if (user.user_metadata?.role) {
-            userRole = user.user_metadata.role as UserRole;
+        let userRole: UserRole = 'admin'; // Default
+        const rawMetadataRole = user.user_metadata?.role;
+        
+        if (rawMetadataRole) {
+            userRole = normalizeRole(rawMetadataRole);
         } else {
             // Intentar obtener desde la base de datos
             const { data: userData } = await supabase
@@ -39,7 +40,7 @@ export async function middleware(request: NextRequest) {
                 .single();
 
             if (userData?.role) {
-                userRole = userData.role as UserRole;
+                userRole = normalizeRole(userData.role);
             }
         }
 

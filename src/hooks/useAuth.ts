@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 import { useEffect, useState } from 'react';
-import { UserRole, canAccessRoute, canAccessStore, hasPermission } from '@/types/roles';
+import { UserRole, canAccessRoute, canAccessStore, hasPermission, normalizeRole } from '@/types/roles';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/lib/routes';
 
@@ -72,12 +72,7 @@ export function useAuth(): UseAuthResult {
 
       // Use metadata directly; no DB query needed
       // Map Supabase role to internal UserRole
-      const rawRole = authUser.user_metadata?.role || 'cajera';
-      let role: UserRole = 'cajero'; // Default fallback
-
-      if (rawRole === 'admin' || rawRole === 'dev') role = 'admin';
-      else if (rawRole === 'gerente' || rawRole === 'grte') role = 'grte';
-      else if (rawRole === 'cajera' || rawRole === 'cajero' || rawRole === 'staff') role = 'cajero';
+      const role: UserRole = normalizeRole(authUser.user_metadata?.role);
       const store_id = authUser.user_metadata?.store_id || '';
 
       setUser({

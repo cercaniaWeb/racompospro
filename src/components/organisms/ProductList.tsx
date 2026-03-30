@@ -12,9 +12,11 @@ interface Product {
   price: number;
   image?: string;
   stock?: number;
+  stockTotal?: number;
   category?: string;
   barcode?: string;
   sku?: string;
+  measurement_unit?: string;
   onPriceEdit?: () => void;
 }
 
@@ -36,7 +38,8 @@ const ProductList: React.FC<ProductListProps> = ({
   const router = useRouter();
 
   if (viewMode === 'table') {
-    // ... (table view logic)
+    // Para el modo tabla, podrías querer agregar la columna de stock total también
+    // Pero por ahora mantengamos la consistencia con el grid
   }
 
   if (loading) {
@@ -63,15 +66,14 @@ const ProductList: React.FC<ProductListProps> = ({
     <div className="space-y-4">
       <SearchBar onSearch={onSearch} placeholder="Buscar productos..." />
       {products.length === 0 ? (
-        // ... (empty state)
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="bg-muted rounded-full p-4 mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-white/5 rounded-full p-6 mb-4 backdrop-blur-sm border border-white/10">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-foreground mb-1">No se encontraron productos</h3>
-          <p className="text-muted-foreground">Intente con otros términos de búsqueda</p>
+          <h3 className="text-xl font-bold text-white mb-2">No se encontraron productos</h3>
+          <p className="text-white/40">Intente con otros términos de búsqueda</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -83,7 +85,9 @@ const ProductList: React.FC<ProductListProps> = ({
               price={product.price}
               image={product.image}
               stock={product.stock}
+              stockTotal={product.stockTotal}
               category={product.category}
+              measurement_unit={product.measurement_unit}
               onAddToCart={() => onAddToCart && onAddToCart(product)}
               onEdit={product.onPriceEdit}
               onClick={() => router.push(`/products/${product.id}`)}

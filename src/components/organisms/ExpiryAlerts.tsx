@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AlertTriangle, Calendar, Package, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -17,7 +17,7 @@ interface ExpiringProduct {
 }
 
 interface ExpiryAlertsProps {
-    storeId: string;
+    storeId?: string | null;
     onClose?: () => void;
 }
 
@@ -25,18 +25,19 @@ const ExpiryAlerts: React.FC<ExpiryAlertsProps> = ({ storeId, onClose }) => {
     const [expiringProducts, setExpiringProducts] = useState<ExpiringProduct[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchExpiringProducts();
-    }, [storeId]);
-
-    const fetchExpiringProducts = async () => {
+    const fetchExpiringProducts = useCallback(async () => {
         setLoading(true);
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('expiring_products')
                 .select('*')
-                .eq('store_id', storeId)
                 .order('days_until_expiry', { ascending: true });
+
+            if (storeId) {
+                query = query.eq('store_id', storeId);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
             setExpiringProducts(data || []);
@@ -45,7 +46,11 @@ const ExpiryAlerts: React.FC<ExpiryAlertsProps> = ({ storeId, onClose }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [storeId]);
+
+    useEffect(() => {
+        fetchExpiringProducts();
+    }, [fetchExpiringProducts]);
 
     const getUrgencyColor = (days: number) => {
         if (days < 0) return 'bg-red-500/20 border-red-500/50 text-red-400';

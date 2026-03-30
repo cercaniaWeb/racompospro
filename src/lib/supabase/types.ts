@@ -4,11 +4,13 @@
 // AUTHENTICATION TYPES
 // ========================================
 
+import { UserRole } from '@/types/roles';
+
 export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'gerente' | 'cajera' | 'dev' | 'staff';
+  role: UserRole;
   status: 'active' | 'inactive' | 'pending';
   imageUrl?: string;
   created_at: string;
@@ -67,7 +69,8 @@ export interface Product {
   image_url?: string;
   is_active?: boolean; // Not in DB schema
   is_weighted?: boolean; // Not in DB schema
-  measurement_unit?: string; // Not in DB schema
+  measurement_unit?: string; // Legacy/Alias
+  unit?: string; // Database field
   is_batch_tracked?: boolean; // Added by migration
   created_at?: string;
   updated_at?: string;
