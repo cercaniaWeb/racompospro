@@ -9,7 +9,7 @@ import NotificationToast from '@/components/notifications/NotificationToast';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Racom-POS',
+  title: 'abarrotesracompos',
   description: 'Sistema de Punto de Venta para Abarrotes',
   icons: {
     icon: '/iconoapp.png',

@@ -30,7 +30,7 @@ export const generateTicketHtml = ({ sale, items, config, user }: PrintTicketPar
       </style>
 
       <div class="text-center">
-        ${config.showLogo ? (config.logoUrl ? `<img src="${config.logoUrl}" style="max-width: 60mm; max-height: 30mm; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto;" />` : '<div class="logo">Racom-POS</div>') : ''}
+        ${config.showLogo ? (config.logoUrl ? `<img src="${config.logoUrl}" style="max-width: 60mm; max-height: 30mm; margin-bottom: 5px; display: block; margin-left: auto; margin-right: auto;" />` : '<div class="logo">abarrotesracompos</div>') : ''}
         <div class="header-text">${config.headerText}</div>
       </div>
 

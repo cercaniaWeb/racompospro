@@ -4,10 +4,16 @@ import React, { useState } from 'react';
 import InputField from '@/components/molecules/InputField';
 import Button from '@/components/atoms/Button';
 import { useProduct } from '@/hooks/useProduct';
+import { useAuth } from '@/hooks/useAuth';
+import { useStoreContext } from '@/hooks/useStoreContext';
 import { supabase } from '@/lib/supabase/client';
+import { Check } from 'lucide-react';
 
 const NewProductPage = () => {
   const { addProduct, error } = useProduct();
+  const { user } = useAuth();
+  const { storeId: contextStoreId, storeName } = useStoreContext();
+  const [successMsg, setSuccessMsg] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -24,12 +30,19 @@ const NewProductPage = () => {
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState('');
 
-  // Mock user data
+  // Resolve store_id: prefer user metadata, then storeContext, then localStorage
+  const resolvedStoreId = user?.store_id || contextStoreId || (typeof window !== 'undefined' ? localStorage.getItem('current_store_id') : null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSuccessMsg('');
 
     try {
+      if (!resolvedStoreId) {
+        alert('No se encontró la sucursal destino. Por favor recarga la página.');
+        return;
+      }
+
       await addProduct({
         name,
         description,
@@ -52,7 +65,7 @@ const NewProductPage = () => {
         batch_number: isBatchTracked ? batchNumber : undefined,
         // @ts-ignore
         expiry_date: isBatchTracked ? expiryDate : undefined,
-      });
+      }, resolvedStoreId);
 
       // Reset form
       setName('');
@@ -70,7 +83,8 @@ const NewProductPage = () => {
       setExpiryDate('');
       setImage(null);
 
-      console.log('Product created successfully');
+      setSuccessMsg(`Producto "${name}" creado exitosamente${storeName ? ` y asignado a ${storeName}` : ''}.`);
+      console.log('Product created successfully, storeId:', resolvedStoreId);
     } catch (err) {
       console.error('Error creating product:', err);
     }
@@ -79,12 +93,21 @@ const NewProductPage = () => {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Nuevo Producto</h1>
-        <p className="text-gray-600">Añadir un nuevo producto al inventario</p>
+        <h1 className="text-2xl font-bold text-foreground">Nuevo Producto</h1>
+        <p className="text-muted-foreground">
+          Añadir un nuevo producto al inventario
+          {storeName && <span className="ml-1 text-primary font-medium">→ {storeName}</span>}
+        </p>
       </div>
 
       <div className="glass rounded-xl border border-white/10 shadow p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {successMsg && (
+            <div className="flex items-center gap-2 bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded">
+              <Check className="w-4 h-4 shrink-0" />
+              {successMsg}
+            </div>
+          )}
           {error && (
             <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded">
               Error: {error}

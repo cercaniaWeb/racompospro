@@ -33,4 +33,4 @@ Para ejecutar el flujo de trabajo, utiliza el script `run_workflow.sh`. Puedes m
 cd proyectos/qwen_coder_workflow
 ./run_workflow.sh
 ```
-# RacomPOSpremium
+# abarrotesracompospremium

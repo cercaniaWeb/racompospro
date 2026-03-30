@@ -28,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({
   user,
   onLogout,
   onMenuToggle,
-  title = 'Racom-POS',
+  title = 'abarrotesracompos',
   actions
 }) => {
   const { unreadCount, history, markAsRead, clearHistory } = useNotificationStore();

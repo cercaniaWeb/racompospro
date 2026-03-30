@@ -8,7 +8,7 @@ interface AuthLayoutProps {
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({
   children,
-  title = 'Bienvenido a Racom-POS',
+  title = 'Bienvenido a abarrotesracompos',
   subtitle = 'Por favor, inicia sesión en tu cuenta'
 }) => {
   return (

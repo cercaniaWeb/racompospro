@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
   logo,
-  title = 'Racom-POS'
+  title = 'abarrotesracompos'
 }) => {
   return (
     <>
@@ -101,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <div className="p-4 border-t border-border">
           <Text variant="caption" className="text-muted-foreground">
-            © {new Date().getFullYear()} Racom-POS
+            © {new Date().getFullYear()} abarrotesracompos
           </Text>
         </div>
       </aside>

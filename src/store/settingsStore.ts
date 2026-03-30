@@ -52,7 +52,7 @@ export const useSettingsStore = create<SettingsState>()(
             barcodeMode: 'scanner',
             supervisorPin: '1234', // Default PIN
             ticketConfig: {
-                headerText: 'Tienda de Abarrotes Racom-POS\nCalle Principal #123\nTel: (555) 123-4567',
+                headerText: 'Tienda de Abarrotes abarrotesracompos\nCalle Principal #123\nTel: (555) 123-4567',
                 footerText: '¡Gracias por su compra!\nVuelva pronto',
                 showLogo: true,
                 showDate: true,

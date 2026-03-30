@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Racom-POS',
+    name: 'abarrotesracompos',
     short_name: 'Racom',
     description: 'Sistema de Punto de Venta para Abarrotes',
     start_url: '/',

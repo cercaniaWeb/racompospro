@@ -70,8 +70,9 @@ serve(async (req) => {
         const sqlData = await sqlResponse.json();
         let generatedSql = sqlData.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
-        // Clean SQL (remove markdown code blocks)
+        // Clean SQL (remove markdown code blocks and trailing semicolons)
         generatedSql = generatedSql.replace(/```sql/g, '').replace(/```/g, '').trim();
+        generatedSql = generatedSql.replace(/;$/, '').trim();
 
         console.log('Generated SQL:', generatedSql);
 
@@ -93,8 +94,21 @@ serve(async (req) => {
             );
         }
 
+        // Handle database errors inside JSON response specifically
+        if (queryResult && queryResult.error) {
+            console.error('SQL RPC Error:', queryResult.error);
+            return new Response(
+                JSON.stringify({
+                    text: `Tuve un problema al procesar los datos. Esto puede ser por la forma en que estructuré la consulta. Error técnico: ${queryResult.error}`,
+                    sql: generatedSql,
+                    data: []
+                }),
+                { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+        }
+
         // Handle empty results
-        if (!queryResult || queryResult.length === 0 || (queryResult.error)) {
+        if (!queryResult || queryResult.length === 0) {
             return new Response(
                 JSON.stringify({
                     text: "No encontré datos que coincidan con tu búsqueda.",

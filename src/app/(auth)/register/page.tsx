@@ -26,8 +26,8 @@ const RegisterPage = () => {
 
     try {
       await register(name, email, password);
-      // After successful registration, redirect to login
-      router.push('/login');
+      // If registration succeeded or fallback to mock mode, go to dashboard
+      router.push('/dashboard');
       router.refresh();
     } catch (err) {
       console.error('Registration failed:', err);

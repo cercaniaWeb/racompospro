@@ -1,6 +1,6 @@
 {
     "name": "Racom POS",
-    "short_name": "RacomPOS",
+    "short_name": "abarrotesracompos",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#111827",

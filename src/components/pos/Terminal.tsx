@@ -280,7 +280,7 @@ export default function POSTerminal() {
       {/* Header */}
       <header className="bg-gray-800 p-2 shadow-md flex justify-between items-center border-b border-gray-700 sticky top-0 z-10">
         <div className="flex items-center gap-2 md:gap-4">
-          <h1 className="text-lg md:text-xl font-bold text-blue-400">Racom-POS</h1>
+          <h1 className="text-lg md:text-xl font-bold text-blue-400">abarrotesracompos</h1>
           <div className="h-6 w-px bg-gray-700 hidden md:block"></div>
           <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-gray-800 rounded-full border border-gray-700">
             <Store size={14} className="text-blue-400" />

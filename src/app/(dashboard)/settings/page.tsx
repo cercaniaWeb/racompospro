@@ -212,7 +212,7 @@ const SettingsPage = () => {
                 <div>
                   <h3 className="text-lg font-medium mb-4 text-foreground">Información de la Empresa</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <InputField id="companyName" label="Nombre de la Empresa" type="text" defaultValue="Tienda de Abarrotes Racom-POS" required />
+                    <InputField id="companyName" label="Nombre de la Empresa" type="text" defaultValue="Tienda de Abarrotes abarrotesracompos" required />
                     <InputField id="companyRfc" label="RFC" type="text" defaultValue="TDA123456789" required />
                     <InputField id="companyAddress" label="Dirección" type="text" defaultValue="Calle Principal #123" required />
                     <InputField id="companyPhone" label="Teléfono" type="tel" defaultValue="(555) 123-4567" required />
@@ -444,7 +444,7 @@ const SettingsPage = () => {
                         {ticketConfig.logoUrl ? (
                           <img src={ticketConfig.logoUrl} alt="Logo" className="h-12 mx-auto mb-2 object-contain" />
                         ) : (
-                          <h1 className="text-xl font-bold">Racom-POS</h1>
+                          <h1 className="text-xl font-bold">abarrotesracompos</h1>
                         )}
                       </div>
                     )}

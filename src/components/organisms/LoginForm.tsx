@@ -104,13 +104,28 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading = false, error }
         </Button>
 
         {/* Register Link */}
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-4">
           <p className="text-sm text-muted-foreground">
             ¿No tienes una cuenta?{' '}
             <a href="/register" className="font-semibold text-primary hover:text-primary/80 transition-colors">
               Regístrate aquí
             </a>
           </p>
+          
+          <div className="pt-4 border-t border-white/5">
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('test@example.com');
+                setPassword('password123');
+                setTimeout(() => onLogin('test@example.com', 'password123'), 100);
+              }}
+              className="text-xs font-medium text-emerald-400/70 hover:text-emerald-400 transition-colors uppercase tracking-wider flex items-center justify-center gap-2 w-full"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Probar con cuenta Demo (Sin correo)
+            </button>
+          </div>
         </div>
       </div>
 
